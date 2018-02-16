@@ -4,7 +4,7 @@ Repository : Rassemblement de tous les fichiers de toutes les branches
 	- Remote : Repository sur un serveur accessibles à tous 
 	- Local : Repository personnel, accessible par vous sans connexion internet
 
-Branch : Sous projet qui permet de diviser les modifications et les versions pour ne 
+Branch : Sous-projet qui permet de diviser les modifications et les versions pour ne 
 	 pas faire les modifications directement/immediatement dans le projet principal
 
 Working Directory : Rassemblement des fichiers de la branche actuellement modifiable
@@ -16,9 +16,9 @@ Pull : Met à jour les fichiers du local repository avec ceux du remote repositor
 
 Fetch : Copie les fichiers du remote repository qui ne sont pas actuellement dans votre
 	local repository. Les fichiers ne sont pas ajoutés à votre working directory, 
-	mais seulement copier dans votre local repository. C'est la première étape d'un 
+	mais seulement copiŽs dans votre local repository. C'est la première étape d'un 
 	pull, la deuxième étant un merge qui permet de mettre à jour les fichiers de 
-	votre working directory avec les modifications copier par le fetch.
+	votre working directory avec les modifications copiŽes par le fetch.
 
 Commmit : Ajoute les modifications du working directory au local repository
 
