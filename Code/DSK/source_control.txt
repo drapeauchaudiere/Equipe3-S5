@@ -1,0 +1,8 @@
+À inclure lorsque vous stagez les fichiers dans le git
+
+ tous les fichiers .c .asm et .h
+ .ccsproject
+ .cproject
+ .project
+ .settings/
+ /targetConfigs/
