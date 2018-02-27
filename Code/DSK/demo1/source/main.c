@@ -16,8 +16,9 @@ int main(void) {
 	
     int32_t result[N_SAMPLES*2-1];
 
-    correlate(result,signal, signal, N_SAMPLES);
-    //for()
+    // Changer correlate pour correlateASM pour la fonctions assembleur
+    correlateASM(result,signal, signal, N_SAMPLES);
+
 	printf("Hello world");
 }
 

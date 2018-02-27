@@ -32,13 +32,13 @@ incrementLoop:
 
 incrementSumLoop:
 
-	MV A3,B3
+	MV A3,B2
 	SUB B6,A2,A0
-	ADD B3,A0,A0
+	ADD B2,A0,A0
 
 	LDW *A6[A0],A1
 	NOP 4
-	LDW *B4[B3],A0
+	LDW *B4[B2],A0
 	NOP 4
 
 	MPY A0,A1,A0	; multiply the samples
@@ -71,12 +71,12 @@ decrementLoop:
 
 decrementSumLoop:
 
-	SUB B6,A3,B3
+	SUB B6,A3,B2
 	SUB A2,A3,A0
 
 	LDW *A6[A0],A1
 	NOP 4
-	LDW *B4[B3],A0
+	LDW *B4[B2],A0
 	NOP 4
 
 	MPY A0,A1,A0	; multiply the samples
