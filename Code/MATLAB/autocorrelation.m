@@ -2,6 +2,8 @@ clear all
 close all
 clc
 
+datafile = '../../Documentation/Tests/data_autocorr_matlab.mat';
+
 % Signal entrant
 % [signalEntrant, Fs_signalEntrant] = audioread('note_guitare_LAd.wav');
 % N_signalEntrant = length(signalEntrant);
@@ -50,4 +52,4 @@ for i = N-1:-1:1
     C_code(N+(N-i)) = somme_Ci;
 end
 
-save('data.mat');
+save(datafile,'C','C_code');
