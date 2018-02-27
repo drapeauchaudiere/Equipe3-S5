@@ -1,0 +1,7 @@
+Note d'avancement du code
+
+18-02-2018 - SM
+- Création du projet
+- Fonction d'interruption pour l'AIC23
+- Pas de micro, donc pas pu tester 
+- Début de la fonctions de correlation
