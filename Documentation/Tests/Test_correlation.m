@@ -14,7 +14,6 @@ load(matlab_datafile);
 C_xcorr = [C1;C2;C3];
 C_matlab = [C1_code;C2_code;C3_code];
 ref = C_xcorr;
-%ref = [mean(C_xcorr(1,:));mean(C_xcorr(2,:));mean(C_xcorr(3,:))];
 
 diff_matlab = zeros(3,59);
 for loop1 = 1:3
@@ -22,9 +21,6 @@ for loop1 = 1:3
 		diff_matlab(loop1,loop2) = (C_matlab(loop1,loop2) - ref(loop1,loop2))/ref(loop1,loop2)*100;
 	end
 end
-% for loop = 1:3
-% 	diff_matlab(loop) = 100*(mean(C_matlab(loop,:)) - ref(loop))/ref(loop);
-% end
 
 % Chargement des données des corrélations C et asm
 C1 = csvread(C1_datafile);
@@ -33,21 +29,16 @@ C3 = csvread(C3_datafile);
 
 C_codeC = [C1(1,1:59);C2(1,1:59);C3(1,1:59)];
 C_asm = [C1(2,1:59);C2(2,1:59);C3(2,1:59)];
-%ref = [mean(C_matlab(1,:));mean(C_matlab(2,:));mean(C_matlab(3,:))];
 ref = C_matlab;
 
 diff_codeC = zeros(3,59);
 diff_asm = zeros(3,59);
 for loop1 = 1:3
 	for loop2 = 1:59
-		diff_codeC(loop1,loop2) = (C_codeC(loop1,loop2) - ref(loop1,loop2))/ref(loop1,loop2)*100;
-		diff_asm(loop1,loop2) = (C_asm(loop1,loop2) - ref(loop1,loop2))/ref(loop1,loop2)*100;
+		diff_codeC(loop1,loop2) = (C_codeC(loop1,loop2) - C_matlab(loop1,loop2))/C_matlab(loop1,loop2)*100;
+		diff_asm(loop1,loop2) = (C_asm(loop1,loop2) - C_codeC(loop1,loop2))/C_codeC(loop1,loop2)*100;
 	end
 end
-% for loop = 1:3
-% 	diff_codeC(loop) = 100*(mean(C_codeC(loop,:)) - ref(loop))/ref(loop);
-% 	diff_asm(loop) = 100*(mean(C_asm(loop,:)) - ref(loop))/ref(loop);
-% end
 
 mean(diff_matlab(1,2:end-1))
 mean(diff_matlab(2,2:end-1))
