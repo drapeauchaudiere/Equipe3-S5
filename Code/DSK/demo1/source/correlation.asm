@@ -16,6 +16,8 @@ _correlateASM
 	.asmfunc
 	; A4 = return pointer, B4 = signal pointer 1, A6 = signal pointer 2, B6 = samples number
 	; A2 = loop counter, A3 = loop counter, A5 = summing register
+	; A7 = signal 1 value
+	; A8 = signal 2 value
 	; A0 = signal 1 value / A register index
 	; A1 = signal 2 value / branch condition bit
 	; B3 = B register index
@@ -23,33 +25,36 @@ _correlateASM
 
 	ZERO A2		; clear the incrementLoop register
 	MVK 1,A5
-	SUB B6,A5,B6	; scale the numbre of samples for arrays starting at 0
+	MV A6,B5
 
 incrementLoop:
 
-	ZERO A5		; clear the summing register
+	ZERO A6		; clear the summing register
+	ZERO A7		; clear the summing register
 	ZERO A3		; clear the sumLoop index register
 
 incrementSumLoop:
 
-	MV A3,B2
-	SUB B6,A2,A0
-	ADD B2,A0,A0
+	MV A3,B1
+	SUB B6,A2,B2
+	ADD B1,B2,B2
 
-	LDW *A6[A0],A1
+	LDH *B4[B1],A8
 	NOP 4
-	LDW *B4[B2],A0
+	LDH *B5[B2],A9
 	NOP 4
 
-	MPY A0,A1,A0	; multiply the samples
-	NOP
-	ADD A0,A5,A5	; add the product to the sum
+	MPYI A8,A9,A8	; multiply the samples
+	NOP 9
+	SADD A8,A7:A6,A7:A6
 
 	ADD 1,A3,A3
 	CMPLTU A2,A3,A1
 	[!A1] B incrementSumLoop
 	NOP 5
 ; end of incrementSumLoop
+
+	SAT A7:A6,A5
 
 	STW A5, *A4++
 
@@ -66,28 +71,32 @@ incrementSumLoop:
 
 decrementLoop:
 
-	ZERO A5		; clear the summing register
+	ZERO A6		; clear the summing register
+	ZERO A7		; clear the summing register
 	ZERO A3		; clear the sumLoop index register
 
 decrementSumLoop:
 
-	SUB B6,A3,B2
+	SUB B6,A3,B1
 	SUB A2,A3,A0
+	MV A0,B2
 
-	LDW *A6[A0],A1
+	LDH *B4[B1],A8
 	NOP 4
-	LDW *B4[B2],A0
+	LDH *B5[B2],A9
 	NOP 4
 
-	MPY A0,A1,A0	; multiply the samples
-	NOP
-	ADD A0,A5,A5	; add the product to the sum
+	MPYI A8,A9,A8	; multiply the samples
+	NOP 9
+	SADD A8,A7:A6,A7:A6
 
 	ADD 1,A3,A3
 	CMPGTU A3,A2,A1
 	[!A1] B decrementSumLoop
 	NOP 5
 ; end of decrementSumLoop
+
+	SAT A7:A6,A5
 
 	STW A5, *A4++
 

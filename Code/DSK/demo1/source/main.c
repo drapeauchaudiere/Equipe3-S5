@@ -7,17 +7,18 @@
 
 void correlate(int32_t *correlation, int32_t *x_n, int32_t *y_n, int32_t N);
 
-void correlateASM(int32_t *, int32_t *, int32_t *, int32_t);
+void correlateASM(int32_t *, int16_t *, int16_t *, int32_t);
 
 #define N_SAMPLES 30
-int32_t signal[N_SAMPLES] = {0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9};
+#pragma DATA_ALIGN(signal,8);
+int16_t signal[N_SAMPLES] = {32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767,32767};
 
 int main(void) {
 	
     int32_t result[N_SAMPLES*2-1];
 
-    // Changer correlate pour correlateASM pour la fonctions assembleur
-    correlateASM(result,signal, signal, N_SAMPLES);
+    // Changer correlate pour correlateASM pour la fonction assembleur
+    correlateASM(result,signal, signal, N_SAMPLES-1);
 
 	printf("Hello world");
 }
@@ -25,7 +26,8 @@ int main(void) {
 
 void correlate(int32_t *correlation, int32_t *x_n, int32_t *y_n, int32_t N)
 {
-    int32_t i,j, somme;
+    int32_t i,j,x,y;
+    int64_t somme;
 
     for(i = 0; i <= N; i++)
     {
@@ -34,16 +36,16 @@ void correlate(int32_t *correlation, int32_t *x_n, int32_t *y_n, int32_t N)
         {
             somme = somme + (x_n[j] * y_n[N-i+j]);
         }
-        correlation[i] = somme;
+        correlation[i] = (int32_t)somme;
     }
 
-    for(i = N-2; i > 0; i--)
+    for(i = N-1; i > 0; i--)
     {
         somme = 0;
         for(j = 0; j<i; j++)
         {
             somme = somme + (x_n[N-j] * y_n[i-j]);
         }
-        correlation[N+(N-i)] = somme;
+        correlation[N+(N-i)] = (int32_t)somme;
     }
 }
