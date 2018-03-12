@@ -52,6 +52,7 @@ incrementSumLoop:
 ; end of incrementSumLoop
 
 	STW A5, *A4++
+	; Test GIT
 
 	ADD 1,A2,A2
 	CMPLTU B6,A2,A1

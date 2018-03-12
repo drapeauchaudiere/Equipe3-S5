@@ -25,6 +25,7 @@ int main(void) {
 
 void correlate(int32_t *correlation, int32_t *x_n, int32_t *y_n, int32_t N)
 {
+    // Test Git
     int32_t i,j, somme;
 
     for(i = 0; i <= N; i++)
