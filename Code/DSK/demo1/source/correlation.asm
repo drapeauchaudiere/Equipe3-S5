@@ -21,7 +21,7 @@ _correlateASM
 	; B3 = B register index
 	; B0 = loop compare value, B1 = loop compare value
 
-	ZERO A2		; clear the incrementLoop register
+	ZERO A2			; clear the incrementLoop register
 	MVK 1,A5
 	SUB B6,A5,B6	; scale the numbre of samples for arrays starting at 0
 
@@ -32,9 +32,9 @@ incrementLoop:
 
 incrementSumLoop:
 
-	MV A3,B2
-	SUB B6,A2,A0
-	ADD B2,A0,A0
+	MV A3,B2		; move the sumLoop index to B register
+	SUB B6,A2,A0	; subtract the incrementLoop index register from the samples number
+	ADD B2,A0,A0	; than add the sumLoop index register -> N-i+j
 
 	LDW *A6[A0],A1
 	NOP 4
@@ -45,8 +45,8 @@ incrementSumLoop:
 	NOP
 	ADD A0,A5,A5	; add the product to the sum
 
-	ADD 1,A3,A3
-	CMPLTU A2,A3,A1
+	ADD 1,A3,A3		; increment the sumLoop index register
+	CMPLTU A2,A3,A1	;
 	[!A1] B incrementSumLoop
 	NOP 5
 ; end of incrementSumLoop
