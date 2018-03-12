@@ -32,9 +32,9 @@ incrementLoop:
 
 incrementSumLoop:
 
-	MV A3,B2		; move the sumLoop index to B register
-	SUB B6,A2,A0	; subtract the incrementLoop index register from the samples number
-	ADD B2,A0,A0	; than add the sumLoop index register -> N-i+j
+	MV A3,B2
+	SUB B6,A2,A0
+	ADD B2,A0,A0
 
 	LDW *A6[A0],A1
 	NOP 4
