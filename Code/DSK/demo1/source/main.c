@@ -17,7 +17,7 @@ int main(void) {
     int32_t result[N_SAMPLES*2-1];
 
     // Changer correlate pour correlateASM pour la fonctions assembleur
-    correlateASM(result,signal, signal, N_SAMPLES);
+    correlateASM(result,signal, signal, N_SAMPLES-1);
 
 	printf("Hello world");
 }
@@ -25,6 +25,7 @@ int main(void) {
 
 void correlate(int32_t *correlation, int32_t *x_n, int32_t *y_n, int32_t N)
 {
+    // Test Git
     int32_t i,j, somme;
 
     for(i = 0; i <= N; i++)
@@ -37,7 +38,7 @@ void correlate(int32_t *correlation, int32_t *x_n, int32_t *y_n, int32_t N)
         correlation[i] = somme;
     }
 
-    for(i = N-2; i > 0; i--)
+    for(i = N-1; i > 0; i--)
     {
         somme = 0;
         for(j = 0; j<i; j++)
