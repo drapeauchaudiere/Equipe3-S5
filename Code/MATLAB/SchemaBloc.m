@@ -11,17 +11,25 @@ Wn3 = 2/Fs*5000;
 Wn4 = 2/Fs*7000; 
 
 
-n=1:300;
+
+
+n=1:256;
 X1 = 0.1*sin(2*pi*700*n/Fs);
-X2 = 0.1*sin(2*pi*300*n/Fs);
+X2 = 0.1*sin(2*pi*3000*n/Fs);
 X3 = 0.1*sin(2*pi*5000*n/Fs);
 X4 = 0.1*sin(2*pi*7000*n/Fs);
 
 
-Xtot = X1+X2+X3;
-[Xkanye,FS1] = audioread('Kanye West - Flashing Lights ft. Dwele.wav'); 
+N = length(n);
 
-fftXtot=fft(Xtot);
+% Conception de la fenêtre de Hamming de longueur N
+ham = hamming(N);     
+
+Xtot = X1+X2+X3;
+
+
+fftXtot=fft(Xtot.*ham',N);
+
 
 %figure();
 %stem((1:length(fftXtot))/length(fftXtot)*Fs, fftXtot);
@@ -32,7 +40,7 @@ fftXtot=fft(Xtot);
 figure();
 [h,w]  = freqz(numF1,denF1);
 figure();
-plot(w*FS1/(2*pi),20*log10(abs(h)));
+plot(w*Fs/(2*pi),20*log10(abs(h)));
 title('filtre passe bas 700Hz');
 xlabel('frequence (Hz)');
 ylabel('Gain (dB)');
@@ -46,7 +54,7 @@ denPB = conv(denF2,denF3);
 
 [h,w]  = freqz(numPB,denPB);
 figure();
-plot(w*FS1/(2*pi),20*log10(abs(h)));
+plot(w*Fs/(2*pi),20*log10(abs(h)));
 title('filtre passe bande 1000-5000Hz');
 xlabel('frequence (Hz)');
 ylabel('Gain (dB)');
@@ -56,7 +64,7 @@ axis([300 7000 -22 0]);
 [numF4,denF4] = butter(2,Wn3,'high');
 [h,w]  = freqz(numF4,denF4);
 figure();
-plot(w*FS1/(2*pi),20*log10(abs(h)));
+plot(w*Fs/(2*pi),20*log10(abs(h)));
 title('filtre passe-haut 7000 Hz');
 xlabel('frequence (Hz)');
 ylabel('Gain (dB)');
@@ -78,7 +86,7 @@ Htot = pot1*H1 - pot2*H2 + pot3*H3;
 [numTot, denTot] = tfdata(Htot,'v');
 [H,w] = freqz(numTot, denTot);
 figure();
-plot(w*FS1/(2*pi),20*log10(abs(H)));
+plot(w*Fs/(2*pi),20*log10(abs(H)));
 title('Filtre Total');
 xlabel('frequence (Hz)');
 ylabel('Gain (dB)');
@@ -92,12 +100,19 @@ open_system('SchemaBlocSimulink')
 set_param('SchemaBlocSimulink','AlgebraicLoopSolver','LineSearch')
 sim('SchemaBlocSimulink')
 
-figure();
-plot(Yint);
-hold on
-plot(Xtot)
-size(Yint)
+% figure();
+% plot(Yint);
+% hold on
+% plot(Xtot)
+ size(Y1)
+figure
 
+% figure();
+% stem(abs(fftXtot));
+% 
+% figure();
+% myCorr= xcorr(Xtot, Xtot)
+% plot(myCorr)
 
 
 
