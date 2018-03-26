@@ -14,27 +14,19 @@ typedef struct s_effect_config
 {
     union
     {
-        uint8_t raw[2];
+        uint8_t raw[5];
         struct
         {
             uint8_t outputIsEnabled:1;
             uint8_t gain:7;             // Global output volume gain
             int8_t octave;              // Octave multiplier
+            uint8_t lowGain;
+            uint8_t midGain;
+            uint8_t highGain;
         } fields;
-    } global;
+    } configuration;
 
-    union
-    {
-      uint8_t raw[6];
-      struct
-      {
-          uint16_t lowGain;
-          uint16_t midGain;
-          uint16_t highGain;
-      } fields;
-    } equalizer;
-
-} EFFECT_CONFIG;
+} EFFECT_CONFIG_S;
 
 
 

@@ -424,3 +424,22 @@ void LCD_write_menu(char * menu)
         }                               //Add 1, passe a ligne2 ainsi de suite
     }
 }
+
+//*********************void LCD_move_cursors(EFFECT_CONFIG_S *config)*************************//
+//Description : Moves the cursor pointers to the appropriate address
+//
+//Function prototype : void LCD_move_cursor(EFFECT_CONFIG_S *config)
+//
+//Enter params       : char * menu : Pointer to menu
+//
+//Exit params        : None
+//
+//Function call      : LCD_aff_menu(menu_actuel);
+//
+//Jean-Francois Bilodeau    MPLab X v3.45    27-02-2018 
+// Changelog :
+//****************************************************************************//
+void LCD_move_cursors(EFFECT_CONFIG_S *config)
+{
+    
+}

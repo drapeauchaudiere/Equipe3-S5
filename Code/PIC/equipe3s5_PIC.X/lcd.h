@@ -51,7 +51,7 @@ unsigned char LCD_dec_pos_curseur (void);
 char * LCD_select_menu (void);
 char * LCD_get_menu (void);
 unsigned char LCD_get_cursor (void);
-void LCD_move_cursors()
+void LCD_move_cursors(EFFECT_CONFIG_S *config);
 
 char text[17] = {'a'};
 

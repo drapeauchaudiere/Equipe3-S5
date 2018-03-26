@@ -7,7 +7,6 @@
       <itemPath>definitions.h</itemPath>
       <itemPath>gpio.h</itemPath>
       <itemPath>spi.h</itemPath>
-      <itemPath>newxc8_header.h</itemPath>
       <itemPath>lcd.h</itemPath>
       <itemPath>config_bits.h</itemPath>
     </logicalFolder>
