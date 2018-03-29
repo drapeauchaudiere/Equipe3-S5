@@ -33,7 +33,7 @@ typedef struct s_spi_peripheral
 {
     SPI_INDEX_E index;
     SPI_STATE_E state;
-    uint8_t baudrate;    
+    uint8_t clockrate;    
     
     uint8_t port;
     uint8_t pin;
@@ -80,7 +80,7 @@ extern "C" {
 
     
     // Macros
-#define SPI_BAUDRATE  // Fosc/(4*(SSPxADD+1))
+#define SPI_CLOCKRATE(clock)  (_XTAL_FREQ/(clock*4))-1 // clock = Fosc/(4*(SSPxADD+1))
 
 #ifdef	__cplusplus
 }
