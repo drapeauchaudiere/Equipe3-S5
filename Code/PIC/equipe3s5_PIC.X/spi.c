@@ -57,27 +57,29 @@ void SPI_init(void)
 
 void SPI_config(SPI_PERIPHERAL_S *peripheral)
 {
-    *((&SSP2ADD) + peripheral->index * 0xAD) &= 0xDF;   // SPEN = 0
+    uint32_t clock = peripheral->clockrate;
+    *((uint8_t *)(&SSP1CON1) - peripheral->index * 0xAD) &= 0xDF;   // SPEN = 0
     
     // SPI peripherial configuration
     
-    *((&SSP2ADD) + peripheral->index * 0xC6) = SPI_CLOCKRATE(peripheral->clockrate);
-    *((&SSP2CON1) + peripheral->index * 0xAD) = 0x0A;   // No collision, no overflow, low level clock idle state, Clock = Fosc/4 * (SSPxADD + 1)    
-    *((&SSP2STAT) + peripheral->index * 0xAD) = 0;      // Data sampled in middle of output time, data transmitted on rising edge  
+    *((&SSP1CON1) - peripheral->index * 0xAD) = 0x0A;   // No collision, no overflow, low level clock idle state, Clock = Fosc/4 * (SSPxADD + 1)    
+    *((&SSP1STAT) - peripheral->index * 0xAD) = 0x40;      // Data sampled in middle of output time, data transmitted on rising edge      
+    *((&SSP1ADD) - peripheral->index * 0xC6) = (64000000/(clock*4000))-1;
     
-    *((&SSP2CON1) + peripheral->index * 0xAD) |= 0x20;  // SPEN = 1
+    *((&SSP1CON1) - peripheral->index * 0xAD) |= 0x20;  // SPEN = 1
+    *((uint16_t *)peripheral->port) = (*(&peripheral->port)) | (1 << peripheral->pin);
     peripheral->state = SPI_STATE_IDLE;
 }
 
 void SPI_write(SPI_PERIPHERAL_S *peripheral, uint8_t size)
 {
-    *(&peripheral->port) = *(&peripheral->port) & (~(1 << peripheral->pin));
+    *((uint16_t *)peripheral->port) = *(&peripheral->port) & (~(1 << peripheral->pin));
     for(uint8_t i = 0; i < size; i++)
     {
+        while(!(*(&SSP1STAT) - peripheral->index * 0xAD) & 0x1);
         *(&SSP1BUF-(peripheral->index * 0xC6)) = peripheral->txdata[i];
-        while(!(*(&SSP1STAT-(peripheral->index * 0xAD)) & _SSP1STAT_BF_MASK ));
     }    
-    *(&peripheral->port) = *(&peripheral->port) | (1 << peripheral->pin);
+    *((uint16_t *)peripheral->port) = *(&peripheral->port) | (1 << peripheral->pin);
 }
 
 uint8_t SPI2_read(uint8_t *data)

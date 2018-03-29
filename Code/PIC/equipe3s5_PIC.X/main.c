@@ -17,13 +17,13 @@ void pic_init(void);
 void main(void) {
     
     SPI_init();
-    LCD_init(getSpiPeripheral(SPI_INDEX_2));
+   LCD_init(getSpiPeripheral(SPI_INDEX_2));
 
     
     while(1)
     {
         LCD_place_cursor_C0L1(0,1);
-        LCD_write_menu(menu_main);
+       LCD_write_char('a');
     }
     
     return;

@@ -33,9 +33,9 @@ typedef struct s_spi_peripheral
 {
     SPI_INDEX_E index;
     SPI_STATE_E state;
-    uint8_t clockrate;    
+    uint16_t clockrate;    
     
-    uint8_t port;
+    uint16_t port;
     uint8_t pin;
     
     uint8_t *txdata;
@@ -49,6 +49,7 @@ SPI_PERIPHERAL_S SPI1_config =
     SPI_STATE_UNINIT
 };
 
+#define SPI2_CLOCK  100     // kHz
 #define SPI2_PORT   &LATD
 #define SPI2_CS_PIN    3
 
@@ -56,6 +57,7 @@ SPI_PERIPHERAL_S SPI2_config =
 {
     SPI_INDEX_2,
     SPI_STATE_UNINIT,
+    SPI2_CLOCK,
     SPI2_PORT,
     SPI2_CS_PIN
 };
@@ -80,7 +82,7 @@ extern "C" {
 
     
     // Macros
-#define SPI_CLOCKRATE(clock)  (_XTAL_FREQ/(clock*4))-1 // clock = Fosc/(4*(SSPxADD+1))
+#define SPI_CLOCKRATE(clock)  (64000000/(clock*4000))-1 // clock = Fosc/(4*(SSPxADD+1))
 
 #ifdef	__cplusplus
 }

@@ -198,9 +198,7 @@ char * LCD_get_menu (void)
 void LCD_init (SPI_PERIPHERAL_S *peripheral)
 {
     spiPeripheral = peripheral; // Link the spi peripheral with the LCD functions
-
-    
-            
+              
     __delay_ms(1); // 40mS delay for VDD POR
     __delay_ms(10);
     __delay_ms(10);
