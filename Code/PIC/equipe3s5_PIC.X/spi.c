@@ -53,6 +53,10 @@ void SPI_init(void)
     SPI[SPI_INDEX_2] = SPI2_config;
     
     SPI_config(&SPI[SPI_INDEX_2]);
+    
+    PIE2bits.SSP2IE = 1;    // Enable the interrupt
+    IPR2bits.SSP2IP = 0;    // Low priority
+    
 }
 
 void SPI_config(SPI_PERIPHERAL_S *peripheral)
@@ -61,10 +65,11 @@ void SPI_config(SPI_PERIPHERAL_S *peripheral)
     *((uint8_t *)(&SSP1CON1) - peripheral->index * 0xAD) &= 0xDF;   // SPEN = 0
     
     // SPI peripherial configuration
-    
-    *((&SSP1CON1) - peripheral->index * 0xAD) = 0x0A;   // No collision, no overflow, low level clock idle state, Clock = Fosc/4 * (SSPxADD + 1)    
-    *((&SSP1STAT) - peripheral->index * 0xAD) = 0x40;      // Data sampled in middle of output time, data transmitted on rising edge      
-    *((&SSP1ADD) - peripheral->index * 0xC6) = (64000000/(clock*4000))-1;
+     
+    *((&SSP1ADD) - peripheral->index * 0xC6) = 161;//(64000000/(clock*4000))-1;
+    *((&SSP1CON1) - peripheral->index * 0xAD) = 0x0A;       // No collision, no overflow, low level clock idle state, Clock = Fosc/4 * (SSPxADD + 1)    
+    *((&SSP1STAT) - peripheral->index * 0xAD) = 0x40;      // Data sampled in middle of output time, data transmitted on rising edge     
+    *((&SSP2CON3) - peripheral->index * 0x30) = 0x40;       // Stop condition interrupt
     
     *((&SSP1CON1) - peripheral->index * 0xAD) |= 0x20;  // SPEN = 1
     *((uint16_t *)peripheral->port) = (*(&peripheral->port)) | (1 << peripheral->pin);
@@ -76,7 +81,8 @@ void SPI_write(SPI_PERIPHERAL_S *peripheral, uint8_t size)
     *((uint16_t *)peripheral->port) = *(&peripheral->port) & (~(1 << peripheral->pin));
     for(uint8_t i = 0; i < size; i++)
     {
-        while(!(*(&SSP1STAT) - peripheral->index * 0xAD) & 0x1);
+        while(!(peripheral->state == SPI_STATE_IDLE));
+        peripheral->state = SPI_STATE_BUSY;
         *(&SSP1BUF-(peripheral->index * 0xC6)) = peripheral->txdata[i];
     }    
     *((uint16_t *)peripheral->port) = *(&peripheral->port) | (1 << peripheral->pin);
@@ -87,18 +93,12 @@ uint8_t SPI2_read(uint8_t *data)
     
 }
 
-SPI_PERIPHERAL_S *getSpiPeripheral(SPI_INDEX_E index)
+SPI_PERIPHERAL_S *SPI_getPeripheral(SPI_INDEX_E index)
 {
     return &SPI[index];
 }
     
-//void spi_init(SPI_PERIPHERAL_S *peripheral)
-//{
-//    
-//    *((&SSP1CON1)-(peripheral->index * SSP_MEMORY_JUMP)) = 0x31;    // Enable serial port, High level idle state, Clock = Fosc/16 
-//    *((&SSP1STAT)-(peripheral->index * SSP_MEMORY_JUMP)) = 0x80;    // Input data sampled at end, Transmit occurs idle to active
-//    *((&SSP1CON3)-(peripheral->index * 0x30)) = 0;  // Overwrite alert
-//    
-//    peripheral->state = SPI_STATE_IDLE;
-//}
-
+void SPI_isr(SPI_INDEX_E index)
+{
+    SPI[index].state = SPI_STATE_IDLE;
+}

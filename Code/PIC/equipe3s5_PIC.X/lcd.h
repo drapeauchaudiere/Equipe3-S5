@@ -66,10 +66,10 @@ char text[17] = {'a'};
 // Menu constants
 char menu_main[4][20] = 
 {
-    "Volume        ",0xFF,"     ",   //i_menu = 1;
-    "Bass          ",0xFF,"     ",
-    "Mid           ",0xFF,"     ",                     
-    "Treble        ",0xFF,"     "
+    "Volume    5         ",   //i_menu = 1;
+    "Bass      5         ",
+    "Mid       5         ",                     
+    "Treble    5         "
 };
 
 

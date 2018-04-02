@@ -76,9 +76,8 @@ extern "C" {
     void SPI_config(SPI_PERIPHERAL_S *peripheral);
     void SPI_write(SPI_PERIPHERAL_S *peripheral, uint8_t size);
     uint8_t SPI2_read(uint8_t *data);
-    SPI_PERIPHERAL_S *getSpiPeripheral(SPI_INDEX_E index);
-//    void spi_wrtie(SPI_INDEX_E peripheral, uint8_t *data);
-//    void spi_read(SPI_INDEX_E peripheral, uint8_t *data);
+    SPI_PERIPHERAL_S *SPI_getPeripheral(SPI_INDEX_E index);
+    void SPI_isr(SPI_INDEX_E index);
 
     
     // Macros
