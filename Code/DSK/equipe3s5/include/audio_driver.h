@@ -18,6 +18,7 @@ static const uint8_t max_playback_gain = 10;        // Max playback volume gain
 static const uint16_t output_buffer_offset = 4000;  // Output buffer outputs 4000 samples after the input buffer
 
 // Main function declarations
+void AUDIO_init(void);
 void c_aic23_ISR(void);
 void recordingStart(void);
 void recordingStop(void);

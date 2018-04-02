@@ -10,4 +10,4 @@
 /****************************************************************************
     Private global variables :
 ****************************************************************************/
-EFFECT_CONFIG_U effectConfiguration;
+EFFECT_CONFIG_U effectConfiguration = {0};

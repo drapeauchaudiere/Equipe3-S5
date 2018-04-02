@@ -8,10 +8,10 @@
 #ifndef DEFINITIONS_H_
 #define DEFINITIONS_H_
 
+#include <csl_chip.h>
 #include <csl_gpio.h>
 #include <csl_irq.h>
 #include <csl_mcbsp.h>
-#include <csl_mcbsphal.h>
 #include <stdint.h>     // get standardized integer types
 #include <stdio.h>      // get standard I/O functions (as printf)
 #include <stddef.h>     // get null and size_t definition

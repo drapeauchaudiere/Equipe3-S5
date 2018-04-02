@@ -52,5 +52,5 @@ void EFFECTS_init(SPI_PERIPHERAL_S *peripheral)
 void EFFECTS_send(void)
 {
     dskSpi->txdata = effectConfiguration.raw;
-    SPI_write(dskSpi,3);
+    SPI_write(dskSpi,4);
 }

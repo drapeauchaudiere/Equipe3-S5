@@ -5,7 +5,7 @@
    .global _vector2
    .global _vector3
    .global _vector4
-   .global _vector5	; for SPI receive
+   .global _c_int05	; for SPI receive
    .global _vector6
    .global _vector7
    .global _vector8
@@ -42,7 +42,7 @@ _vector1:   VEC_ENTRY _vec_dummy  	;NMI
 _vector2:   VEC_ENTRY _vec_dummy  	;RSVD
 _vector3:   VEC_ENTRY _vec_dummy
 _vector4:   VEC_ENTRY _vec_dummy
-_vector5:   VEC_ENTRY _vec_dummy
+_vector5:   VEC_ENTRY _c_int05
 _vector6:   VEC_ENTRY _vec_dummy
 _vector7:   VEC_ENTRY _vec_dummy
 _vector8:   VEC_ENTRY _vec_dummy

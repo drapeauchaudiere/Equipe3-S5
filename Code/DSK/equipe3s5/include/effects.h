@@ -16,23 +16,39 @@
 
 typedef union u_effect_config
 {
-        uint32_t reg;
-        uint8_t raw[4];
-        struct
-        {
-            unsigned outputIsEnabled:1;
-            unsigned effectsAreEnable:1;
-            unsigned gain:6;             // Global output volume gain
-            unsigned lowGain:4;          // Low freq filter gain
-            unsigned midGain:4;          // Mid freq filter gain
-            unsigned highGain:4;         // High freq filter gain
-            unsigned octave:4;           // Octave multiplier
-            uint8_t  rsvd;
-        } fields;
+    uint32_t reg;
+    uint8_t raw[4];
+    struct
+    {
+        unsigned octave:4;           // Octave multiplier
+        unsigned highGain:4;         // High freq filter gain
+        unsigned midGain:4;          // Mid freq filter gain
+        unsigned lowGain:4;          // Low freq filter gain
+        unsigned gain:6;             // Global output volume gain
+        unsigned effectsAreEnabled:1;
+        unsigned outputIsEnabled:1;
+        uint8_t  rsvd;
+    } fields;
 
 } EFFECT_CONFIG_U;
 
+/*unsigned octave:4;           // Octave multiplier
+unsigned highGain:4;         // High freq filter gain
+unsigned midGain:4;          // Mid freq filter gain
+unsigned lowGain:4;          // Low freq filter gain
+unsigned gain:6;             // Global output volume gain
+unsigned effectsAreEnabled:1;
+unsigned outputIsEnabled:1;
+uint8_t  rsvd;*/
 
+/*unsigned outputIsEnabled:1;
+unsigned effectsAreEnable:1;
+unsigned gain:6;             // Global output volume gain
+unsigned lowGain:4;          // Low freq filter gain
+unsigned midGain:4;          // Mid freq filter gain
+unsigned highGain:4;         // High freq filter gain
+unsigned octave:4;           // Octave multiplier
+uint8_t  rsvd;*/
 
 /***************************************************************************
     Global variables declaration :

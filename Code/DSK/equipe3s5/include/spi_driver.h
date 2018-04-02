@@ -14,7 +14,7 @@
     Global variables declaration :
 ***************************************************************************/
 
-extern bool spiRRDY;        // SPI received data is ready
+extern bool spiRxFlag;        // SPI received data is ready
 
 /***************************************************************************
     Function prototype :

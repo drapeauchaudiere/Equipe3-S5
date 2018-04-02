@@ -89,6 +89,7 @@ void SPI_write(SPI_PERIPHERAL_S *peripheral, uint8_t size)
         peripheral->state = SPI_STATE_BUSY;
         *(&SSP1BUF-(peripheral->index * 0xC6)) = peripheral->txdata[i];
     }    
+    while(!(peripheral->state == SPI_STATE_IDLE));
     *((uint16_t *)peripheral->port) = *(&peripheral->port) | (1 << peripheral->pin);
 }
 
