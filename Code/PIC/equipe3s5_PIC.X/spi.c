@@ -50,11 +50,15 @@ void SPI_init(void)
     RPINR12_13 |= 0x05;
     RPINR12_13 &= 0xF5;
         
+    SPI[SPI_INDEX_1] = SPI1_config;
     SPI[SPI_INDEX_2] = SPI2_config;
     
+    SPI_config(&SPI[SPI_INDEX_1]);
     SPI_config(&SPI[SPI_INDEX_2]);
     
-    PIE2bits.SSP2IE = 1;    // Enable the interrupt
+    PIE1bits.SSP1IE = 1;
+    IPR1bits.SSP1IP = 0;
+    PIE2bits.SSP2IE = 1;    // Enable the SPI2 interrupt
     IPR2bits.SSP2IP = 0;    // Low priority
     
 }
@@ -66,7 +70,7 @@ void SPI_config(SPI_PERIPHERAL_S *peripheral)
     
     // SPI peripherial configuration
      
-    *((&SSP1ADD) - peripheral->index * 0xC6) = 161;//(64000000/(clock*4000))-1;
+    *((&SSP1ADD) - peripheral->index * 0xC6) = (64000000/(clock*4000))-1;
     *((&SSP1CON1) - peripheral->index * 0xAD) = 0x0A;       // No collision, no overflow, low level clock idle state, Clock = Fosc/4 * (SSPxADD + 1)    
     *((&SSP1STAT) - peripheral->index * 0xAD) = 0x40;      // Data sampled in middle of output time, data transmitted on rising edge     
     *((&SSP2CON3) - peripheral->index * 0x30) = 0x40;       // Stop condition interrupt

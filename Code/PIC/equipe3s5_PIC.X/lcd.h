@@ -32,36 +32,31 @@
 #define __LCD_H
 
 #include "definitions.h"
+#include "effects.h"
 #include "spi.h"
 
-void LCD_init(SPI_PERIPHERAL_S *peripheral);             // Fonction pour initialiser l'ecran.
-void LCD_clr(void);              // Fonction pour effacer l'ecran.
-void LCD_place_cursor_C0L1(unsigned char Col, unsigned char Lig);// Fct pour positionner le curseur.
-void LCD_write_char_hex(unsigned char Car);  // Fonction pour afficher en hexadecimal.
-void LCD_write_string(const char * string);// Afficher une chaine de caracteres
-void LCD_write_menu(char * menu);   // Fonction pour afficher un menu.
-void LCD_write_char(unsigned char Car);       // Fonction pour afficher un caractere.
-void LCD_write_car_hex (unsigned char byte);
+void LCD_init(SPI_PERIPHERAL_S *peripheral);                        // Fonction pour initialiser l'ecran.
+void LCD_clr(void);                                                 // Fonction pour effacer l'ecran.
+void LCD_place_cursor_C0L1(unsigned char Col, unsigned char Lig);   // Fct pour positionner le curseur.
 void LCD_write_data (unsigned char rs, unsigned char data);
-void LCD_busy (void);
-unsigned char LCD_read_busy (void);
-unsigned char LCD_flip_data (unsigned char input);
-unsigned char LCD_inc_pos_curseur (void);
-unsigned char LCD_dec_pos_curseur (void);
+void LCD_write_char(unsigned char Car);                             // Fonction pour afficher un caractere.
+void LCD_write_string(const char * string);                         // Afficher une chaine de caracteres
+void LCD_write_menu(char * menu);                                   // Fonction pour afficher un menu.
+void LCD_update_menu(EFFECT_CONFIG_U *config);                      // Updates the current values of the main menu
 char * LCD_select_menu (void);
 char * LCD_get_menu (void);
+unsigned char LCD_flip_data (unsigned char input);
+
+void LCD_busy (void);
+unsigned char LCD_inc_pos_curseur (void);
+unsigned char LCD_dec_pos_curseur (void);
 unsigned char LCD_get_cursor (void);
-void LCD_move_cursors(EFFECT_CONFIG_S *config);
 
 char text[17] = {'a'};
 
 /*************************************************
  ***************   Definitions   *****************
  ************************************************/
-
-
-
-
 
 // Menu constants
 char menu_main[4][20] = 

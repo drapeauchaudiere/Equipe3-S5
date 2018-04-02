@@ -43,10 +43,17 @@ typedef struct s_spi_peripheral
         
 } SPI_PERIPHERAL_S;
 
+#define SPI1_CLOCK  100 // kHz
+#define SPI1_PORT   &LATB
+#define SPI1_CS_PIN 2
+
 SPI_PERIPHERAL_S SPI1_config = 
 {
     SPI_INDEX_1,
-    SPI_STATE_UNINIT
+    SPI_STATE_UNINIT,
+    SPI1_CLOCK,
+    SPI1_PORT,
+    SPI1_CS_PIN
 };
 
 #define SPI2_CLOCK  100     // kHz

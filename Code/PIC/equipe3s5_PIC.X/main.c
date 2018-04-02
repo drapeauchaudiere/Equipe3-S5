@@ -5,7 +5,6 @@
  * Created on March 18, 2018, 11:37 AM
  */
 
-
 #include <xc.h>
 #include "definitions.h"
 #include "gpio.h"
@@ -22,12 +21,14 @@ void main(void) {
     SPI_init();
     INT_init();
     LCD_init(SPI_getPeripheral(SPI_INDEX_2));
+    EFFECTS_init(SPI_getPeripheral(SPI_INDEX_1));
    
     
     while(1)
-    {
+    {   
         LCD_place_cursor_C0L1(0,1);
-       LCD_write_menu(menu_main);
+        LCD_write_menu(menu_main);
+        //SPI_write(SPI_getPeripheral(SPI_INDEX_1),);
     }
     
     return;
@@ -50,6 +51,12 @@ void INT_init(void)
 
 void interrupt low_priority low_isr(void)
 {
+    if(PIR1bits.SSP1IF & PIE1bits.SSP1IE)
+    {
+        SPI_isr(SPI_INDEX_1);
+        PIR1bits.SSP1IF = 0;
+    }
+        
     if(PIR2bits.SSP2IF & PIE2bits.SSP2IE)
     {
         SPI_isr(SPI_INDEX_2);

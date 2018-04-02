@@ -4,13 +4,10 @@
 // Functions :  void LCD_init(void);
 //              void LCD_clr(void);
 //              void LCD_place_cursor_C0L1(unsigned char Col, unsigned char Lig);
-//              void LCD_aff_char_hex(unsigned char Car);
 //              void LCD_aff_string(const char * string);
 //              void LCD_aff_menu(char * menu);
 //              void LCD_aff_char(unsigned char Car);
-//              void LCD_write_data (unsigned char rs, unsigned char data);
 //              void LCD_busy (void);
-//              unsigned char LCD_read_busy (void);
 //              unsigned char LCD_flip_data (unsigned char input);
 //              unsigned char LCD_inc_pos_curseur (void);
 //              unsigned char LCD_dec_pos_curseur (void);
@@ -29,7 +26,7 @@ char * menu_present;
 unsigned char pos_cur = 1;
 unsigned char i_menu = 1;
 char *pVolume, *pBass, *pMid, *pTreble;     // Pointers for the actual volume/eq cursor positions
-SPI_PERIPHERAL_S *spiPeripheral;            // Pointer towards the SPI peripheral of the LCD
+SPI_PERIPHERAL_S *lcdSpi;            // Pointer towards the SPI peripheral of the LCD
 
 //********************unsigned char LCD_inc_pos_curseur (void)****************//
 //Description : Function increments cursor and return its new value
@@ -197,7 +194,7 @@ char * LCD_get_menu (void)
 //****************************************************************************//
 void LCD_init (SPI_PERIPHERAL_S *peripheral)
 {
-    spiPeripheral = peripheral; // Link the spi peripheral with the LCD functions
+    lcdSpi = peripheral; // Link the spi peripheral with the LCD functions
               
     __delay_ms(1); // 40mS delay for VDD POR
     __delay_ms(10);
@@ -259,8 +256,8 @@ void LCD_write_data (unsigned char rs, unsigned char data)
     data_to_send[2] = ((data_flipped&0x0F)<<4);
     
     __delay_us(25);
-    spiPeripheral->txdata = data_to_send;
-    SPI_write(spiPeripheral, 3); // Write data on SPI bus
+    lcdSpi->txdata = data_to_send;
+    SPI_write(lcdSpi, 3); // Write data on SPI bus
 }                
 
 //***************unsigned char LCD_flip_data (unsigned char input)****************//
@@ -359,17 +356,13 @@ void LCD_place_cursor_C0L1(unsigned char Col, unsigned char Lig)
 //****************************************************************************//
 void LCD_write_char (unsigned char Car)
 {
-    if (Car != 0x0D) {LCD_write_data(1, Car);}  //Write char to screen
+    if (Car != 0x0D) 
+    {
+        LCD_write_data(1, Car);  //Write char to screen
+    } 
     else {LCD_write_data(1, 0xFF);}             //write err to screen
 }
 
-void LCD_write_car_hex (unsigned char byte)
-{
-    unsigned char byteh, bytel;
-    hex_to_ascii(byte, &byteh, &bytel); //Convert byte to ascii values
-    LCD_write_char(byteh);                   //Send high nibble
-    LCD_write_char(bytel);                   //send low nibble      
-}
 
 //*******************void LCD_aff_string(const char *string)******************//
 //Description : Function write string to screen (max length of 20)
@@ -437,7 +430,7 @@ void LCD_write_menu(char * menu)
 //Jean-Francois Bilodeau    MPLab X v3.45    27-02-2018 
 // Changelog :
 //****************************************************************************//
-void LCD_move_cursors(EFFECT_CONFIG_S *config)
+void LCD_update_menu(EFFECT_CONFIG_U *config)
 {
     
 }
