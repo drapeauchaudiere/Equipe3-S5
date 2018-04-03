@@ -39,7 +39,7 @@ plot (n, x, 'b')
 
 round(sos700(1:3)*2^13)
 round(sos700(4:6)*2^13)
-gain_global700 = round(gain_global700*2^13)
+round(gain_global700*2^13)
 
 % [A,B,C,D] = butter(4,Theta_700);
 % [sos700 gain_global700] = ss2sos(A,B,C,D, 'up', 'inf');
@@ -129,5 +129,43 @@ round(gain_global7000*2^13)
 %% Combinaison des trois filtres
 clc
 close all
+
+[B,A] = sos2tf(sos700, gain_global700);
+H_Pbas = tf(B,A);
+
+[B,A] = sos2tf(sos_Phaut, gain_global_Phaut);
+H_Pbande = tf(B,A);
+[B,A] = sos2tf(sos_Pbas, gain_global_Pbas);
+H_Pbande = H_Pbande*tf(B,A);
+
+[B,A] = sos2tf(sos7000, gain_global7000);
+H_Phaut = tf(B,A);
+
+H_tot = H_Pbas - H_Pbande + H_Phaut;
+
+[num,den] = tfdata(H_tot,'v');
+
+x = 1:0.1:2000;
+n = cos(2*pi*x*4000/Fe);
+
+[num,den] = tfdata(H_Pbas,'v');
+y_bas = filter(num,den,n);
+
+[num,den] = tfdata(H_Pbande,'v');
+y_bande = filter(num,den,n);
+
+[num,den] = tfdata(H_Phaut,'v');
+y_haut = filter(num,den,n);
+
+y = y_bas + y_bande + y_haut;
+
+figure
+plot(x,y)
+
+[B, A] = tfdata(H_tot, 'v');
+figure
+freqz(B,A,10000,Fe)
+
+
 
 
