@@ -110,6 +110,7 @@ void comm_poll()					//added for communication/init using polling
 void CODEC_start() {
 	  DSK6713_init();
 
+	  config.regs[4] = inputsource;
 	 hAIC23_handle=DSK6713_AIC23_openCodec(0, &config); //handle(pointer) to codec
 	 DSK6713_AIC23_setFreq(hAIC23_handle, fs);  //set sample rate
 	 MCBSP_config(DSK6713_AIC23_DATAHANDLE,&AIC23CfgData);//interface 32 bits toAIC23
@@ -200,7 +201,7 @@ void comm_intr()						 	//for communication/init using interrupt
   	IRQ_reset(CODECEventId);    		//reset codec INT 11
    IRQ_globalEnable();       			//globally enable interrupts
   	IRQ_nmiEnable();          			//enable NMI interrupt
-   //IRQ_enable(CODECEventId);			//enable CODEC eventXmit INT11
-
+   IRQ_enable(CODECEventId);			//enable CODEC eventXmit INT11
+   CODEC_stop();
 	output_sample(0);        			//start McBSP interrupt outputting a sample comme une pompe qu'on prime (DG dec 2012)
 }

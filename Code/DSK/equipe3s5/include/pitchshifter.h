@@ -21,8 +21,8 @@
 #define WINDOW_CONSTANT     2 //(sqrt((WINDOW_SIZE/(FRAME_HOP))/2))
 static const float pi = 3.1416;
 
-void pitchShift(uint16_t *samples, int8_t step);
-void splitFrames(uint16_t *samples, float *frames);
+void pitchShift(float *samples, int8_t step);
+void splitFrames(float *samples, float *frames);
 void mergeFrames(float *samples, float *frames, uint16_t overlap);
 void windowFrame(uint16_t * samples, uint16_t *frames, uint16_t overlapConstant);
 void fftFrame(float *frame, int16_t *index);
@@ -30,10 +30,10 @@ void ifftFrame(float *frame, float *phase,int16_t *index);
 void frameMagnitudes(void);
 void framePhases(float *phases);
 void processFrame(float *phases, float *phaseCumul, uint16_t overlap);
-void interpolateSamples(uint16_t *samples, float *processedFrames, uint16_t step);
+void interpolateSamples(float *samples, float *processedFrames, uint16_t step);
 float findAlpha(int8_t step);
 float angleModulo(float angle);
-
+void tableClear(float* table, uint16_t length);
 
 
 #endif /* INCLUDE_PITCHSHIFTER_H_ */
