@@ -18,7 +18,7 @@ float w[WINDOW_SIZE];
 #pragma DATA_ALIGN(TableFFT,8);
 float TableFFT[2*WINDOW_SIZE];
 
-void pitchShift(uint16_t *samples, int8_t step)
+void pitchShift(float *samples, int8_t step)
 {
     uint16_t i,j;
     float alpha = findAlpha(step);
@@ -31,6 +31,9 @@ void pitchShift(uint16_t *samples, int8_t step)
     static float framePhase[WINDOW_SIZE];            // Vector to hold the phase
     static float cumulFramePhase[WINDOW_SIZE];
     static float timeStretched[TIME_STRETCHED_SIZE];   // Allocate dynamically ?
+
+    tableClear(cumulFramePhase, WINDOW_SIZE);
+    tableClear(timeStretched, TIME_STRETCHED_SIZE);
 
     tw_genr2fft(w, WINDOW_SIZE);
     bit_rev(w,(WINDOW_SIZE>>1));
@@ -82,7 +85,7 @@ void pitchShift(uint16_t *samples, int8_t step)
 
 ***************************************************************************/
 
-void splitFrames(uint16_t *samples, float *frames)
+void splitFrames(float *samples, float *frames)
 {
     uint16_t i,j,k;
 
@@ -118,8 +121,9 @@ void mergeFrames(float *samples, float *frames, uint16_t hop)
 {
     uint16_t i,j,k,n;
     uint16_t outputFrameOverlap = WINDOW_SIZE-hop;
-    static float prevSamples[WINDOW_SIZE] = {0};
+    static float prevSamples[WINDOW_SIZE];
 
+    tableClear(prevSamples,WINDOW_SIZE);
 
     for(i=0; i<outputFrameOverlap; i++)          // The first frame is added to the frame of the previous samples
     {
@@ -218,8 +222,9 @@ void framePhases(float *phases)
 
 void processFrame(float *phase, float *phaseCumul, uint16_t outHop)
 {
-    static float prevFramePhase[WINDOW_SIZE] = {0};
+    //static float prevFramePhase[WINDOW_SIZE] = {0};
     float delta[WINDOW_SIZE];
+    float temp = 0;
     uint16_t i;
 
 /*    for(i=0; i<WINDOW_SIZE; i++)     // DeltaPhi : get the phase difference, remove expected phase difference, map to -pi/pi range, get the true frequency
@@ -231,8 +236,8 @@ void processFrame(float *phase, float *phaseCumul, uint16_t outHop)
 
     for(i=0; i<WINDOW_SIZE; i++)     // DeltaPhi : get the phase difference
     {
-        delta[i] = phase[i] - prevFramePhase[i];
-        prevFramePhase[i] = phase[i];
+        delta[i] = phase[i] ;//- prevFramePhase[i];
+        //prevFramePhase[i] = phase[i];
     }
     for(i=0; i<WINDOW_SIZE; i++)     // DeltaPhiPrime : remove expected phase difference
     {
@@ -248,26 +253,28 @@ void processFrame(float *phase, float *phaseCumul, uint16_t outHop)
     }
     for(i=0; i<WINDOW_SIZE; i++)        // Get the new phase adjusted to the pitch
     {
+        temp = outHop * delta[i];
         phaseCumul[i] = phaseCumul[i] + outHop * delta[i];
     }
 }
 
 
-void interpolateSamples(uint16_t *samples, uint16_t *processedFrames, uint16_t alpha)
+void interpolateSamples(float *samples, float *processedFrames, uint16_t step)
 {
-    uin16_t i;
+    uint16_t i;
+    tableClear(samples,NUMBER_SAMPLES);
     if(step == 12)
     {
         for(i=0; i<NUMBER_SAMPLES; i++)
         {
-            samples[i] = (uint16_t)processedFrames[3*i]; // *** Mettre en fractionnaire (2Q13?)
+            samples[i] = processedFrames[3*i/2]; // *** Mettre en fractionnaire (2Q13?)
         }
     }
     else if(step == 0)
     {
         for(i=0; i<NUMBER_SAMPLES; i++)
         {
-            samples[i] = (uint16_t)processedFrames[3*i];    // *** Mettre en fractionnaire (2Q13?)
+            samples[i] = 100000*processedFrames[i];    // *** Mettre en fractionnaire (2Q13?)
         }
     }
 
@@ -297,6 +304,14 @@ float angleModulo(float angle)
     return angle;
 }
 
+void tableClear(float *table, uint16_t length)
+{
+    uint16_t i;
 
+    for(i=0; i<length; i++)
+    {
+        table[i] = 0;
+    }
+}
 
 

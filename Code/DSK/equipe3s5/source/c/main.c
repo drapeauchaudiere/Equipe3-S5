@@ -40,18 +40,12 @@ static void initialization(void);
 int main(void)
 {
 
-    //initialization();
+    initialization();
 #ifdef PITCH_DEBUG
-    /*float constant = FRAME_OVERLAP;
-    constant = FRAME_HOP;
-    constant = NUMBER_FRAMES;
-    constant = FRAME_TABLE_SIZE;
-    constant = MAX_OUTPUT_HOP;
-    constant = TIME_STRETCHED_SIZE;
-    constant = WINDOW_CONSTANT;*/
-    //uint16_t buffer[512] = {1};
-    pitchShift((uint16_t *)buffer,12);
 
+    pitchShift((float *)buffer,12);
+    AUDIO_dacWrite((float *)buffer);
+    while(1);
 #elif
     while(1)
     {
@@ -82,8 +76,8 @@ void initialization(void)
     DSK6713_DIP_init(); // Initialisation de la communication du DSP avec les 4 DIP swichs
     DSK6713_LED_init(); // Initialisation des 4 LEDS (éteindre)
 
-    SPI_init();
-    //AUDIO_init();
+    //SPI_init();
+    AUDIO_init();
 }
 
 
