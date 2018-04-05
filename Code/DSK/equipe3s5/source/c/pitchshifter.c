@@ -5,157 +5,219 @@
  *      Author: simon
  */
 #include "pitchshifter.h"
+#include "DSPF_sp_cfftr2_dit.h"
+#include "DSPF_sp_icfftr2_dif.h"
+#include "hanning.dat"
+#include "utility.h"
 
+#pragma DATA_ALIGN(w, 8);
+float w[WINDOW_SIZE];
 
+#pragma DATA_ALIGN(TableFFT,8);
+float TableFFT[2*WINDOW_SIZE];
 
 void pitchShift(uint16_t *samples, int8_t step)
 {
-    uint8_t i,j;
+    uint16_t i,j;
     float alpha = findAlpha(step);
-    uint16_t outputFrameOverlap = alpha * frameOverlap;
-    // Allocate ton heap (malloc, realloc)
-    uint16_t frameTable[frameTableSize];     // Table to hold the frames
-    uint16_t currentFrame[windowSize];
-    uint16_t framePhase[windowSize];
-    uint16_t cumulFramePhase[windowSize];
-    uint16_t timeStretched[timeStretchedSize];
-    uint16_t
+    uint16_t outputFrameHop = alpha * FRAME_HOP;
+    uint16_t outputWindowConstant = sqrt((WINDOW_SIZE/outputFrameHop)/2);
+    // Allocate ton heap (malloc, realloc) ?
+    static uint16_t frameTable[FRAME_TABLE_SIZE];        // Table to hold the frames
+    static uint16_t currentFrame[WINDOW_SIZE];          // Vector to hold the samples of the current frame
+    static uint16_t framePhase[WINDOW_SIZE];            // Vector to hold the phase
+    static uint16_t cumulFramePhase[WINDOW_SIZE];
+    static uint16_t timeStretched[TIME_STRETCHED_SIZE];   // Allocate dynamically ?
 
-    splitFrames(samples, &frameTable);
+    tw_genr2fft(w, WINDOW_SIZE);
+    bit_rev(w,(WINDOW_SIZE>>1));
 
-    for(i=0; i<numFrames; i++)
+    splitFrames(samples, frameTable);
+
+    for(i=0; i<NUMBER_FRAMES; i++)
     {
-        for(j=0; j<windowSize; j++)
+        for(j=0; j<WINDOW_SIZE; j++)
         {
-            currentFrame[j] = frameTable[i*windowSize+j] * hanning[j] / windowConstant;  // windowConstant = constant -> sqrt((windowSize/frameOverlap)/2)
+            currentFrame[j] = frameTable[i*WINDOW_SIZE+j] * hanning[j] / WINDOW_CONSTANT;  // windowConstant = constant -> sqrt((WINDOW_SIZE/frameOverlap)/2)
         }
 
-        fftFrame(&currentFrame);
+        fftFrame(currentFrame);
 
-        framePhase(&currentFrame, &framePhase);
-        frameMag(&currentFrame);
+        framePhases(framePhase);
+        frameMagnitudes();
 
-        processFrame(&framePhase);
+        processFrame(framePhase,cumulFramePhase,outputFrameHop);
 
-        ifftFrame(&currentFrame,&framePhase);
+        ifftFrame(currentFrame,framePhase);
 
-        for(j=0; j<windowSize; j++)
+        for(j=0; j<WINDOW_SIZE; j++)
         {
-            frameTable[i*windowSize+j] = currentFrame[j] * hanning[j] / outputWindowConstant;  // windowConstant = constant -> sqrt((windowSize/outputFrameOverlap)/2)
+            frameTable[i*WINDOW_SIZE+j] = currentFrame[j] * hanning[j] / outputWindowConstant;  // windowConstant = constant -> sqrt((WINDOW_SIZE/outputFrameOverlap)/2)
         }
-
     }
 
-    mergeFrames(&timeStretched, &frameTable, outputFrameOverlap);
+    mergeFrames(timeStretched, frameTable, outputFrameHop);
 
-    interpolateSamples(&samples, &timeStretched, alpha)
+    interpolateSamples(samples, timeStretched, alpha);
 }
 
 
 void splitFrames(uint16_t *samples, uint16_t *frames)
 {
-    uint8_t i,j,k;
+    uint16_t i,j,k;
 
-    for(i=0; i<numFrames; i++)
+    for(i=0; i<NUMBER_FRAMES; i++)
     {
-        for(j=(i*frameHop), k=i*windowSize; j<((i+1)*windowSize)); j++)
+        k=i*WINDOW_SIZE;
+        for(j=(i*FRAME_HOP); j<((i*FRAME_HOP)+WINDOW_SIZE); j++)
         {
             frames[k] = samples[j];
-            k += 1;
+            k++;
         }
     }
 }
 
-void mergeFrames(uint16_t *samples, uin16_t *frames, uint16_t overlap)
+void mergeFrames(uint16_t *samples, uint16_t *frames, uint16_t hop)
 {
-    uint8_t i,j,k;
-    uint16_t outputFrameHop = windowSize-overlap;
+    uint16_t i,j,k,n;
+    uint16_t outputFrameOverlap = WINDOW_SIZE-hop;
+    static uint16_t prevSamples[WINDOW_SIZE] = {0};
 
-    for(i=0; i<windowSize; i++)          // The first frame is put in as is
+
+    for(i=0; i<outputFrameOverlap; i++)          // The first frame is added to the frame of the previous samples
+    {
+        samples[i] = prevSamples[hop+i]+frames[i];
+    }
+    for(; i<WINDOW_SIZE; i++)
     {
         samples[i] = frames[i];
     }
 
-    for(i=1; i<numFrames; i++)
+    for(i=1; i<NUMBER_FRAMES-1; i++)
     {
-        k = outputFrameHop * i;
+        k = hop * i;
 
-        for(j=i*windowSize ; j<(i*outputFrameHop) ; j++)    // The first samples are overlapped with the previous frame
+        for(j=i*WINDOW_SIZE ; j<(i*WINDOW_SIZE+outputFrameOverlap) ; j++)    // The first samples are overlapped with the previous frame
         {
             samples[k] = samples[k] + frames[j];
-            k +=1;
+            k++;
         }
-        for(; j<(i+1)*windowSize ;j++)   // Then the samples are put in as is
+        for(; j<(i+1)*WINDOW_SIZE; j++)                          // Then the samples are put in as is
         {
             samples[k] = frames[j];
-            k +=1;
+            k++;
         }
+    }
+
+    k = hop * i;
+    for(j=i*WINDOW_SIZE,n=0; j<(i*WINDOW_SIZE+outputFrameOverlap); j++)                     // The last frame samples are saved for the next samples
+    {
+        samples[k] = samples[k] + frames[j];
+        prevSamples[n] = samples[k];
+        k++;
+        n++;
+    }
+    for(; j<(i+1)*WINDOW_SIZE; j++)
+    {
+        samples[k] = frames[j];
+        prevSamples[n] = samples[k];
+        k++;
+        n++;
     }
 }
 
-void fftFrame(uint16_t *frames)
+void fftFrame(uint16_t *frame)
 {
+    uint16_t i;
 
+    for (i=0;i<WINDOW_SIZE;++i)
+    {
+        TableFFT[2*i]=frame[i];
+        TableFFT[2*i+1]=0;
+    }
+
+    DSPF_sp_cfftr2_dit(TableFFT,w,WINDOW_SIZE);
 }
 
 void ifftFrame(uint16_t *frame, uint16_t *phase)
 {
+    uint16_t i,n;
 
-}
-
-void frameMagnitudes(uint16_t *frames)
-{
-    uint8_t i;
-
-    for(i=0; i<windowSize; i++)
+    // Load tableFFT
+    for(i=0; i<WINDOW_SIZE; i++)
     {
-        frames[i] = _abs(frames[i]);
+        TableFFT[2*i+1] = TableFFT[2*i] * sin(phase[i]);
+        TableFFT[2*i] = TableFFT[2*i] * cos(phase[i]);
+    }
+
+    DSPF_sp_icfftr2_dif(TableFFT,w,WINDOW_SIZE);
+
+    for (i=0; i<WINDOW_SIZE; ++i){
+           TableFFT[i]=TableFFT[2*i]/WINDOW_SIZE;
+    }
+
+    n = WINDOW_SIZE-1;
+
+    for (i=0; i<WINDOW_SIZE; ++i){
+        frame[n]=TableFFT[2*i];
+        n--;
     }
 }
 
-void framePhase(uint16_t *frames, uint16_t *phases)
+void frameMagnitudes(void)
 {
-    uint8_t i;
-    for(i=0; i<windowSize; i++)
+    uint16_t i;
+
+    for(i=0; i<WINDOW_SIZE; i++)
     {
-       // atan(frames[2*i+1]/frames[2*i]);
+        TableFFT[2*i] = sqrt (pow(TableFFT[2*i],2) + pow(TableFFT[2*i+1],2));   // sqrt(TableFFT[2*i]^2+TableFFT[2*i+1]^2);
     }
 }
 
-void processFrame(uint16_t *phase, uint16_t *phaseCumul, uint16_t outputOverlap)
+void framePhases(uint16_t *phases)
 {
-    static uint16_t prevFramePhase[windowSize];
-    uint16_t delta[windowSize];
-    uint8_t i;
-
-    for(i=0; i<windowSize; i++)     // DeltaPhi : get the phase difference, remove expected phase difference, map to -pi/pi range, get the true frequency
+    uint16_t i;
+    for(i=0; i<WINDOW_SIZE; i++)
     {
-        phaseCumul[i] = phaseCumul[i] + outputOverlap + 2*pi*i/windowSize + ((((phase[i] - prevFramePhase[i] - (frameOverlap * 2 * pi * i/windowSize))+pi) % (2*pi))-pi)/frameOverlap;
+        phases[i] = atan2(TableFFT[2*i+1], TableFFT[2*i]);      // atan(frames[2*i+1]/frames[2*i]);
+    }
+}
+
+void processFrame(uint16_t *phase, uint16_t *phaseCumul, uint16_t overlap)
+{
+    static uint16_t prevFramePhase[WINDOW_SIZE];
+    uint16_t delta[WINDOW_SIZE];
+    uint16_t i;
+
+/*    for(i=0; i<WINDOW_SIZE; i++)     // DeltaPhi : get the phase difference, remove expected phase difference, map to -pi/pi range, get the true frequency
+    {
+        phaseCumul[i] = (uint16_t)(phaseCumul[i] + overlap + 2*pi*i/WINDOW_SIZE + ((((phase[i] - prevFramePhase[i] - (FRAME_OVERLAP * 2 * pi * i/WINDOW_SIZE))+pi) % (2*pi)))-pi)/FRAME_OVERLAP);
         prevFramePhase[i] = phase[i];
     }
-}
-    /*
-    for(i=0; i<windowSize; i++)     // DeltaPhi : get the phase difference
+}*/
+
+    for(i=0; i<WINDOW_SIZE; i++)     // DeltaPhi : get the phase difference
     {
         delta[i] = phase[i] - prevFramePhase[i];
         prevFramePhase[i] = phase[i];
     }
-    for(i=0; i<windowSize; i++)     // DeltaPhiPrime : remove expected phase difference
+    for(i=0; i<WINDOW_SIZE; i++)     // DeltaPhiPrime : remove expected phase difference
     {
-        delta[i] = delta[i] - (frameOverlap * 2 * pi * i/windowSize);
+        delta[i] = delta[i] - (FRAME_OVERLAP * 2 * pi * i/WINDOW_SIZE);
     }
-    for(i=0; i<windowSize; i++)     // DeltaPhiPrimeMod : map to -pi/pi range
+    for(i=0; i<WINDOW_SIZE; i++)     // DeltaPhiPrimeMod : map to -pi/pi range
     {
-        delta[i] = ((delta[i]+pi)%(2*pi)) - pi;
+        delta[i] = fmod(delta[i]+pi,2*pi) - pi;
     }
-    for(i=0; i<windowSize; i++)     // Get the true frequency
+    for(i=0; i<WINDOW_SIZE; i++)     // Get the true frequency
     {
-        delta[i] = 2*pi*i/windowSize + delta[i]/frameOverlap;
+        delta[i] = 2*pi*i/WINDOW_SIZE + delta[i]/FRAME_OVERLAP;
     }
-    for(i=0; i<windowSize; i++)
+    for(i=0; i<WINDOW_SIZE; i++)
     {
-        phaseCumul[i] = phaseCumul[i] + outputOverlap + delta[i];
-    }*/
+        phaseCumul[i] = phaseCumul[i] + overlap + delta[i];
+    }
+}
 
 
 void interpolateSamples(uint16_t *samples, uint16_t *processedFrames, uint16_t alpha)
@@ -173,7 +235,7 @@ float findAlpha(int8_t step)
     }
     else
     {
-        alpha = 1 / (1 << (_abs(step)/12);  // 1 / 2^(abs(step)/12) = 2^(step/12) when step < 0
+        alpha = 1 / (1 << (_abs(step)/12));  // 1 / 2^(abs(step)/12) = 2^(step/12) when step < 0
     }
     return alpha;
 }

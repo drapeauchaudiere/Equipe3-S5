@@ -17,6 +17,11 @@ static const uint32_t max_record_size = 80000;      // 80 000 samples
 static const uint8_t max_playback_gain = 10;        // Max playback volume gain
 static const uint16_t output_buffer_offset = 4000;  // Output buffer outputs 4000 samples after the input buffer
 
+static const uint16_t buffer_size = 256;
+static const uint16_t number_buffers = 4;
+extern uint16_t *currentBuffer;
+extern bool bufferReady;
+
 // Main function declarations
 void c_aic23_ISR(void);
 void recordingStart(void);

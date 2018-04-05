@@ -16,6 +16,7 @@
 #include <stdio.h>      // get standard I/O functions (as printf)
 #include <stddef.h>     // get null and size_t definition
 #include <stdbool.h>    // get boolean, true and false definition
+#include <math.h>
 #include "dsk6713.h"
 #include "dsk6713_led.h"
 #include "dsk6713_dip.h"

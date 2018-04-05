@@ -9,27 +9,27 @@
 #define PITCHSHIFTER_H_
 
 #include "definitions.h"
-#include "hanning.dat"
 
-static const uint16_t numSamples = 1024;        // 1024 input samples
-static const uint16_t windowSize = 256;         // Size of processing frames
-static const uint16_t frameOverlap = windowSize / 4;    // 25% frame overlap
-static const uint16_t frameHop = windowSize - frameOverlap;
-static const uint16_t numFrames = (numSamples - windowSize) / frameOverlap;  // Number of frames overlapped in the samples
-static const uint16_t frameTableSize = windowSize * numFrames;      // Size of the table to hold the frames
-static const uint16_t maxOutputOverlap = frameOverlap * 1.7818;   // 2^(10/12) -> 1.7818, step of 10
-static const uint16_t timeStretchedSize = (numFrames*maxOutputOverlap)-maxOutputOverlap+windowSize;
+#define NUMBER_SAMPLES      512        // 1024 input samples
+#define WINDOW_SIZE         256         // Size of processing frames
+#define FRAME_HOP           (WINDOW_SIZE / 8)    // 12.5% frame overlap
+#define FRAME_OVERLAP       (WINDOW_SIZE - FRAME_HOP)
+#define NUMBER_FRAMES       ((NUMBER_SAMPLES - WINDOW_SIZE) / (FRAME_HOP)+1)  // Number of frames overlapped in the samples
+#define FRAME_TABLE_SIZE    (WINDOW_SIZE * NUMBER_FRAMES)     // Size of the table to hold the frames
+#define MAX_OUTPUT_HOP      ((FRAME_HOP) * 2)   // 2^(10/12) -> 1.7818, step of 10
+#define TIME_STRETCHED_SIZE (((NUMBER_FRAMES)*(MAX_OUTPUT_HOP))-(MAX_OUTPUT_HOP)+WINDOW_SIZE)
+#define WINDOW_CONSTANT     2 //(sqrt((WINDOW_SIZE/(FRAME_HOP))/2))
 static const float pi = 3.1416;
 
-void pitchShift(uint16_t *samples, uint8_t step);
+void pitchShift(uint16_t *samples, int8_t step);
 void splitFrames(uint16_t *samples, uint16_t *frames);
-void mergeFrames(uint16_t *samples, uint16_t *frames);
+void mergeFrames(uint16_t *samples, uint16_t *frames, uint16_t overlap);
 void windowFrame(uint16_t * samples, uint16_t *frames, uint16_t overlapConstant);
-void fftFrame(uint16_t *frames);
+void fftFrame(uint16_t *frame);
 void ifftFrame(uint16_t *frame, uint16_t *phase);
-void frameMagnitudes(uint16_t *frames);
-void framePhase(uint16_t *frames, uint16_t *phases);
-void processFrame(uint16_t *phases, uint16_t *phaseCumul);
+void frameMagnitudes(void);
+void framePhases(uint16_t *phases);
+void processFrame(uint16_t *phases, uint16_t *phaseCumul, uint16_t overlap);
 void interpolateSamples(uint16_t *samples, uint16_t *processedFrames, uint16_t alpha);
 float findAlpha(int8_t step);
 
