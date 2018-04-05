@@ -60,7 +60,7 @@ if size(x,1) < size(x,2)
 
 end
 
-x = [zeros(hop*3,1) ; x];
+%x = [zeros(hop*3,1) ; x];
 
 %% Initialization
 
