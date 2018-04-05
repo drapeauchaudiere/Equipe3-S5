@@ -2,68 +2,82 @@
  * main.c
  */
 
-#include "definitions.h"
-#include "gpio.h"
+#include "spi_driver.h"
+#include "audio_driver.h"
+#include "effects.h"
+#include "pitchshifter.h"
+#include "buffer.dat"
 
-uint8_t recordingState = 0;
+/****************************************************************************
+    Private macros and constants :
+****************************************************************************/
 
-int main(void) {
+#define SDRAM_CE0_ADDR  0x80000000                  // Start of the CE0 memory
+static const uint32_t max_buffer_size = 160000;     // 16k samples / seconds * 10seconds
 
-    gpio_init();
-    comm_intr();
-    enableInterrupts();
+#define PITCH_DEBUG
 
-	while(1)
-	{
-	    if(!gpio_get(CPLD_DIP0) && !recordingState)
-	    {
-	        recordingStart();
-	    }
-	    else if(gpio_get(CPLD_DIP0) && recordingState)
-	    {
-	        recordingStop();
-	    }
-	};
-}
+/****************************************************************************
+    Extern content declaration :
+****************************************************************************/
 
-void recordingStart(void)
+extern far void vectors();  // Vecteurs d'interruption
+extern bool spiRxFlag;      // SPI received data is ready
+extern EFFECT_CONFIG_U effectConfiguration;
+extern uint16_t *currentBuffer;
+extern bool bufferReady;
+
+/****************************************************************************
+    Private function prototypes :
+****************************************************************************/
+
+static void initialization(void);
+
+/****************************************************************************
+    Main Program :
+****************************************************************************/
+
+int main(void)
 {
-    recordingState = 1;
-    // vide le buffer
-    enableInterrupt11();
 
+    initialization();
+#ifdef PITCH_DEBUG
+
+    pitchShift((float *)buffer,12);
+    AUDIO_dacWrite((float *)buffer);
+    while(1);
+#elif
+    while(1)
+    {
+        if(bufferReady)
+        {
+            pitchShift(currentBuffer, 12);
+        }
+
+        if(SPI_rrdy())                          // If a new configuration has been sent,
+        {
+            effectConfiguration.reg = SPI_read();       // Go read the SPI buffer
+            DSK6713_LED_toggle(0);                  // Toggle LED0 when a packet is read
+        }
+
+    }
+#endif
+    return 0;
 }
 
-void recordingStop(void)
+
+/****************************************************************************
+    Private functions :
+****************************************************************************/
+
+void initialization(void)
 {
-    recordingState = 0;
-    disableInterrupt11();
+    // INITIALISATION DU HARDWARE
+    DSK6713_DIP_init(); // Initialisation de la communication du DSP avec les 4 DIP swichs
+    DSK6713_LED_init(); // Initialisation des 4 LEDS (éteindre)
+
+    //SPI_init();
+    AUDIO_init();
 }
 
-interrupt void c_aic23_ISR(void)
-{
-    static sampleIndex = 0;
 
-    *((uint32_t *) SDRAM_CE0_ADDR + sampleIndex) = input_left_sample();
-
-    if(sampleIndex > output_buffer_offset)
-    {
-        output_left_sample(*((uint32_t *) SDRAM_CE0_ADDR + (sampleIndex - output_buffer_offset)));
-    }
-    else
-    {
-        output_left_sample(*((uint32_t *) SDRAM_CE0_ADDR + (max_record_size - output_buffer_offset + sampleIndex)));
-    }
-
-    sampleIndex++;
-
-    if(sampleIndex > max_record_size)
-    {
-        sampleIndex = 0;
-        toggle(CPLD_LED1);
-    }
-
-    *((uint32_t *)ICR_ADDR) |= INT11_MASK;  // Clear interrupt flag
-
-    return;
-}

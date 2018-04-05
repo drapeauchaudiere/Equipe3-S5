@@ -5,7 +5,7 @@
    .global _vector2
    .global _vector3
    .global _vector4
-   .global _vector5
+   .global _vector5	; for SPI receive
    .global _vector6
    .global _vector7
    .global _vector8
@@ -14,7 +14,7 @@
    .global _c_aic23_ISR	;for INT11
    .global _vector12  
    .global _vector13   
-   .global _c_led0Timer_ISR	;for INT14
+   .global _vector14 		;for INT14
    .global _vector15		;for INT15
 
    .ref _c_int00				;entry address
@@ -51,5 +51,5 @@ _vector10:  VEC_ENTRY _vec_dummy
 _vector11:  VEC_ENTRY _c_aic23_ISR
 _vector12:  VEC_ENTRY _vec_dummy
 _vector13:  VEC_ENTRY _vec_dummy
-_vector14:  VEC_ENTRY _c_led0Timer_ISR
+_vector14:  VEC_ENTRY _vec_dummy
 _vector15:  VEC_ENTRY _vec_dummy
