@@ -25,7 +25,7 @@ void main(void) {
     
     while(1)
     {   
-    EFFECTS_init(SPI_getPeripheral(SPI_INDEX_1));
+        EFFECTS_init(SPI_getPeripheral(SPI_INDEX_1));
         LCD_place_cursor_C0L1(0,1);
         LCD_write_menu(menu_main);
         //SPI_write(SPI_getPeripheral(SPI_INDEX_1),);

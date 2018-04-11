@@ -39,7 +39,10 @@ typedef struct s_spi_peripheral
     uint8_t pin;
     
     uint8_t *txdata;
+    uint8_t txsize;
+    uint8_t txcount;
     uint8_t *rxdata;
+    uint8_t rxcount;
         
 } SPI_PERIPHERAL_S;
 
@@ -69,11 +72,6 @@ SPI_PERIPHERAL_S SPI2_config =
     SPI2_CS_PIN
 };
 
-
-
- #define SPI2_CS         LATDbits.LATD3        // CSN output pin, PORTD pin 3
- #define LED            LATCbits.LATC0        // LED output pin, PORTC pin 0 
-
 #ifdef	__cplusplus
 extern "C" {
 #endif
@@ -81,7 +79,7 @@ extern "C" {
     //void spi_init(SPI_INDEX_E peripheral);
     void SPI_init(void);
     void SPI_config(SPI_PERIPHERAL_S *peripheral);
-    void SPI_write(SPI_PERIPHERAL_S *peripheral, uint8_t size);
+    void SPI_write(SPI_PERIPHERAL_S *peripheral);
     uint8_t SPI2_read(uint8_t *data);
     SPI_PERIPHERAL_S *SPI_getPeripheral(SPI_INDEX_E index);
     void SPI_isr(SPI_INDEX_E index);

@@ -80,17 +80,14 @@ void SPI_config(SPI_PERIPHERAL_S *peripheral)
     peripheral->state = SPI_STATE_IDLE;
 }
 
-void SPI_write(SPI_PERIPHERAL_S *peripheral, uint8_t size)
+void SPI_write(SPI_PERIPHERAL_S *peripheral)
 {
-    *((uint16_t *)peripheral->port) = *(&peripheral->port) & (~(1 << peripheral->pin));
-    for(uint8_t i = 0; i < size; i++)
-    {
-        while(!(peripheral->state == SPI_STATE_IDLE));
-        peripheral->state = SPI_STATE_BUSY;
-        *(&SSP1BUF-(peripheral->index * 0xC6)) = peripheral->txdata[i];
-    }    
     while(!(peripheral->state == SPI_STATE_IDLE));
-    *((uint16_t *)peripheral->port) = *(&peripheral->port) | (1 << peripheral->pin);
+    *((uint16_t *)peripheral->port) = *(&peripheral->port) & (~(1 << peripheral->pin)); // Assert CS
+    peripheral->state = SPI_STATE_BUSY;     // Reserve the peripheral
+    peripheral->txcount = 0;                // Reset the transmit count
+    *(&SSP1BUF-(peripheral->index * 0xC6)) = peripheral->txdata[0];     // Send the first byte
+    
 }
 
 uint8_t SPI2_read(uint8_t *data)
@@ -105,5 +102,14 @@ SPI_PERIPHERAL_S *SPI_getPeripheral(SPI_INDEX_E index)
     
 void SPI_isr(SPI_INDEX_E index)
 {
-    SPI[index].state = SPI_STATE_IDLE;
+    if(SPI[index].txsize > SPI[index].txcount)
+    {
+        *(&SSP1BUF-(index * 0xC6)) = SPI[index].txdata[SPI[index].txcount];
+        SPI[index].txcount++;
+    }
+    else
+    {
+        *((uint16_t *)SPI[index].port) = *(&SPI[index].port) | (1 << SPI[index].pin);   // Deassert CS
+        SPI[index].state = SPI_STATE_IDLE;      // Free the peripheral
+    }
 }

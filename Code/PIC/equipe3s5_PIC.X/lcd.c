@@ -257,7 +257,8 @@ void LCD_write_data (unsigned char rs, unsigned char data)
     
     __delay_us(25);
     lcdSpi->txdata = data_to_send;
-    SPI_write(lcdSpi, 3); // Write data on SPI bus
+    lcdSpi->txsize = 3;
+    SPI_write(lcdSpi); // Write data on SPI bus
 }                
 
 //***************unsigned char LCD_flip_data (unsigned char input)****************//

@@ -5,6 +5,7 @@
 #include "spi_driver.h"
 #include "audio_driver.h"
 #include "effects.h"
+#include <math.h>
 
 /****************************************************************************
     Private macros and constants :
@@ -25,6 +26,7 @@ extern bool spiRxFlag;      // SPI received data is ready
 extern bool aic23AdcFlag;   // ADC data is ready
 extern EFFECT_CONFIG_U effectConfiguration;
 
+
 uint32_t getIFRASM(void);
 
 /****************************************************************************
@@ -39,9 +41,9 @@ static void initialization(void);
 
 int main(void)
 {
-
-    initialization();
-
+    float temp =0;
+    //initialization();
+    temp = atan2(0.33,0.45);
     while(1)
     {
         if(getIFRASM() & INT_IF5)                   // If a new configuration has been sent,
