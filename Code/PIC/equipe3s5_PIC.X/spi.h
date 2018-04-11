@@ -37,6 +37,8 @@ typedef struct s_spi_peripheral
     
     uint16_t port;
     uint8_t pin;
+    uint16_t intreg;
+    uint8_t intindex;
     
     uint8_t *txdata;
     uint8_t txsize;
@@ -46,9 +48,11 @@ typedef struct s_spi_peripheral
         
 } SPI_PERIPHERAL_S;
 
-#define SPI1_CLOCK  100 // kHz
-#define SPI1_PORT   &LATB
-#define SPI1_CS_PIN 2
+#define SPI1_CLOCK      100 // kHz
+#define SPI1_PORT       &LATB
+#define SPI1_CS_PIN     2
+#define SPI1_INT_REG    &PIE1
+#define SPI1_INT_INDEX  3
 
 SPI_PERIPHERAL_S SPI1_config = 
 {
@@ -56,12 +60,16 @@ SPI_PERIPHERAL_S SPI1_config =
     SPI_STATE_UNINIT,
     SPI1_CLOCK,
     SPI1_PORT,
-    SPI1_CS_PIN
+    SPI1_CS_PIN,
+    SPI1_INT_REG,
+    SPI1_INT_INDEX            
 };
 
-#define SPI2_CLOCK  100     // kHz
-#define SPI2_PORT   &LATD
-#define SPI2_CS_PIN    3
+#define SPI2_CLOCK      100     // kHz
+#define SPI2_PORT       &LATD
+#define SPI2_CS_PIN     3
+#define SPI2_INT_REG    &PIE2
+#define SPI2_INT_INDEX  6
 
 SPI_PERIPHERAL_S SPI2_config =
 {
@@ -69,7 +77,9 @@ SPI_PERIPHERAL_S SPI2_config =
     SPI_STATE_UNINIT,
     SPI2_CLOCK,
     SPI2_PORT,
-    SPI2_CS_PIN
+    SPI2_CS_PIN,
+    SPI2_INT_REG,
+    SPI2_INT_INDEX
 };
 
 #ifdef	__cplusplus

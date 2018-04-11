@@ -40,7 +40,7 @@ MCBSP_Config MCBSP_SPIConfig = {
         MCBSP_FMKS(RCR, RCOMPAND, MSB)          |   // No companding (MSB first)
         MCBSP_FMKS(RCR, RFIG, NO)               |   //
         MCBSP_FMKS(RCR, RDATDLY, 0BIT)          |   // Set to 0 for SPI slave
-        MCBSP_FMKS(RCR, RFRLEN1, OF(2))         |   // 3 messages per frame
+        MCBSP_FMKS(RCR, RFRLEN1, OF(0))         |   // 3 messages per frame
         MCBSP_FMKS(RCR, RWDLEN1, 24BIT)         |   // This changes to 8 bits per message
         MCBSP_FMKS(RCR, RWDREVRS, DISABLE),         // 32-bit reversal is disable
 

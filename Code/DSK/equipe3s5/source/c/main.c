@@ -41,9 +41,7 @@ static void initialization(void);
 
 int main(void)
 {
-    float temp =0;
-    //initialization();
-    temp = atan2(0.33,0.45);
+    initialization();
     while(1)
     {
         if(getIFRASM() & INT_IF5)                   // If a new configuration has been sent,

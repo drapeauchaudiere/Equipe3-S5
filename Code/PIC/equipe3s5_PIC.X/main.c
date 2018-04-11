@@ -49,14 +49,18 @@ void INT_init(void)
     INTCONbits.PEIE = 1;
 }
 
-void interrupt low_priority low_isr(void)
+void interrupt high_priority high_isr(void)
 {
     if(PIR1bits.SSP1IF & PIE1bits.SSP1IE)
     {
         SPI_isr(SPI_INDEX_1);
         PIR1bits.SSP1IF = 0;
     }
-        
+}
+
+void interrupt low_priority low_isr(void)
+{
+      
     if(PIR2bits.SSP2IF & PIE2bits.SSP2IE)
     {
         SPI_isr(SPI_INDEX_2);

@@ -56,9 +56,9 @@ void SPI_init(void)
     SPI_config(&SPI[SPI_INDEX_1]);
     SPI_config(&SPI[SPI_INDEX_2]);
     
-    PIE1bits.SSP1IE = 1;
-    IPR1bits.SSP1IP = 0;
-    PIE2bits.SSP2IE = 1;    // Enable the SPI2 interrupt
+    //PIE1bits.SSP1IE = 1;    // Enable the SPI1 interrupt
+    IPR1bits.SSP1IP = 1;    // High priority
+    //PIE2bits.SSP2IE = 1;    // Enable the SPI2 interrupt
     IPR2bits.SSP2IP = 0;    // Low priority
     
 }
@@ -86,6 +86,7 @@ void SPI_write(SPI_PERIPHERAL_S *peripheral)
     *((uint16_t *)peripheral->port) = *(&peripheral->port) & (~(1 << peripheral->pin)); // Assert CS
     peripheral->state = SPI_STATE_BUSY;     // Reserve the peripheral
     peripheral->txcount = 0;                // Reset the transmit count
+    *((uint16_t *)peripheral->intreg) = *(&peripheral->intreg) | (1 << peripheral->intindex);   // Enable interrupt
     *(&SSP1BUF-(peripheral->index * 0xC6)) = peripheral->txdata[0];     // Send the first byte
     
 }
@@ -110,6 +111,8 @@ void SPI_isr(SPI_INDEX_E index)
     else
     {
         *((uint16_t *)SPI[index].port) = *(&SPI[index].port) | (1 << SPI[index].pin);   // Deassert CS
+        *((uint16_t *)SPI[index].intreg) = *(&SPI[index].intreg) & (~(1 << SPI[index].intindex));   // Disable interrupts
         SPI[index].state = SPI_STATE_IDLE;      // Free the peripheral
     }
 }
+
