@@ -71,17 +71,18 @@ typedef enum e_keyboard_keys
     KEY_7 = 0x82,       // X1 Y3    1000 0010
     KEY_8 = 0x42,       // X2 Y3    0100 0010
     KEY_9 = 0x22,       // X3 Y3    0010 0010
-    KEY_star = 0x81,    // X1 Y4    1000 0001
-    KEY_hash = 0x21,    // X3 Y4    0010 0001
-    KEY_A = 0x18,       // X4 Y1    0001 1000
-    KEY_B = 0x14,       // X4 Y2    0001 0100
-    KEY_C = 0x12,       // X4 Y3    0001 0010
-    KEY_D = 0x11,       // X4 Y4   0001 0001
+    KEY_A = 0x81,       // X1 Y4    1000 0001
+    KEY_B = 0x21,       // X3 Y4    0010 0001
+    KEY_C = 0x11,       // X4 Y1    0001 1000
+    KEY_D = 0x13,       // X4 Y2    0001 0100
+    KEY_E = 0x14,       // X4 Y3    0001 0010
+    KEY_F = 0x18,       // X4 Y4   0001 0001
     NO_KEY = 0x0
             
 }KEYBOARD_KEYS_E;
 
-
+#define DECREMENT 0
+#define INCREMENT 1
 
 
 #ifdef	__cplusplus

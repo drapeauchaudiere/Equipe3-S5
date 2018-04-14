@@ -131,7 +131,7 @@ bool SPI_rrdy(void)
 }
 
 /****************************************************************************
-    Interrupt Servie Routines :
+    Interrupt Service Routines :
 ****************************************************************************/
 
 interrupt void c_int05(void)

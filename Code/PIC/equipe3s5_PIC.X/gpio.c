@@ -10,7 +10,14 @@
 #include "gpio.h"
 
 
-KEYBOARD_KEYS_E getKeys(void)
+void GPIO_init(void)
 {
-    return (KEYBOARD_KEYS_E)LATE;
+    TRISE = 0x0;
+    LATE = 0x0;
+    TRISE = 0xFF;
+}
+
+uint8_t GPIO_getPort(uint16_t port)
+{
+    return *(uint16_t *)port;
 }
