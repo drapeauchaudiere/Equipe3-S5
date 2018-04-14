@@ -23,6 +23,16 @@ x = cos(2*pi*n*200/Fe);
 
 y =  filter(num, den, x);
 
+%Délai de groupe
+[Gd,Wgd] = grpdelay(num, den);
+
+figure
+plot(Wgd,Gd)
+title('Delai de groupe')
+xlabel('Fréquence w')
+ylabel('Délai de groupe en sec')
+grid
+
 %Find TF filter
 G = tf(num,den);
 freq_coup = bandwidth(G);
@@ -116,6 +126,16 @@ Theta_7000 = 2*7000/Fe;
 [A,B,C,D] = butter(2,Theta_7000,'high');
 [sos7000 gain_global7000] = ss2sos(A,B,C,D, 'up', 'inf');
 [B,A] = sos2tf(sos7000, gain_global7000);
+
+%Délai de groupe
+[Gd,Wgd] = grpdelay(sos7000);
+
+figure
+plot(Wgd,Gd)
+title('Delai de groupe')
+xlabel('Fréquence w')
+ylabel('Délai de groupe en sec')
+grid
 
 figure
 zplane(B, A);
