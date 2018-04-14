@@ -39,7 +39,7 @@ void EFFECTS_init(SPI_PERIPHERAL_S *peripheral)
     effectConfiguration.fields.outputIsEnabled = 0;
     effectConfiguration.fields.effectsAreEnabled = 0;
     effectConfiguration.fields.gain = 5;            
-    effectConfiguration.fields.lowGain = 5;         
+    effectConfiguration.fields.lowGain = 8;         
     effectConfiguration.fields.midGain = 5;         
     effectConfiguration.fields.highGain = 5;        
     effectConfiguration.fields.octave = 0;          
