@@ -32,7 +32,7 @@ SPI_PERIPHERAL_S *dskSpi;         // Pointer to the SPI peripheral to the DSK
 //};
 
 
-void EFFECTS_init(SPI_PERIPHERAL_S *peripheral)
+EFFECT_CONFIG_U *EFFECTS_init(SPI_PERIPHERAL_S *peripheral)
 {
     dskSpi = peripheral;
     
@@ -45,13 +45,13 @@ void EFFECTS_init(SPI_PERIPHERAL_S *peripheral)
     effectConfiguration.fields.octave = 0;          
     effectConfiguration.fields.rsvd = 0;
     
-    EFFECTS_send();
+    EFFECTS_send(&effectConfiguration);
     
 }
 
-void EFFECTS_send(void)
+void EFFECTS_send(EFFECT_CONFIG_U *config)
 {
-    dskSpi->txdata = effectConfiguration.raw;
+    dskSpi->txdata = config->raw;
     dskSpi->txsize = 4;
     SPI_write(dskSpi);
 }

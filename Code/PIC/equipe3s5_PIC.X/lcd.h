@@ -35,7 +35,7 @@
 #include "effects.h"
 #include "spi.h"
 
-void LCD_init(SPI_PERIPHERAL_S *peripheral);                        // Fonction pour initialiser l'ecran.
+char *LCD_init(SPI_PERIPHERAL_S *peripheral);                        // Fonction pour initialiser l'ecran.
 void LCD_clr(void);                                                 // Fonction pour effacer l'ecran.
 void LCD_place_cursor_C0L1(unsigned char Col, unsigned char Lig);   // Fct pour positionner le curseur.
 void LCD_write_data (unsigned char rs, unsigned char data);
@@ -58,14 +58,7 @@ char text[17] = {'a'};
  ***************   Definitions   *****************
  ************************************************/
 
-// Menu constants
-char menu_main[4][20] = 
-{
-    "Volume    5         ",   //i_menu = 1;
-    "Bass      5         ",
-    "Mid       5         ",                     
-    "Treble    5         "
-};
+
 
 
 #endif

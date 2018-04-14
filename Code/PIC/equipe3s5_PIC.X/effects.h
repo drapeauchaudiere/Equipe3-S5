@@ -34,8 +34,8 @@ typedef union u_effect_config
 } EFFECT_CONFIG_U;
 
 
-void EFFECTS_init(SPI_PERIPHERAL_S *peripheral);
-void EFFECTS_send(void);
+EFFECT_CONFIG_U *EFFECTS_init(SPI_PERIPHERAL_S *peripheral);
+void EFFECTS_send(EFFECT_CONFIG_U *config);
 
 #ifdef	__cplusplus
 }

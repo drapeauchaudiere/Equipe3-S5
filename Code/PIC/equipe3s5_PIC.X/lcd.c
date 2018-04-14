@@ -28,6 +28,15 @@ unsigned char i_menu = 1;
 char *pVolume, *pBass, *pMid, *pTreble;     // Pointers for the actual volume/eq cursor positions
 SPI_PERIPHERAL_S *lcdSpi;            // Pointer towards the SPI peripheral of the LCD
 
+// Menu constants
+char menu_main[4][20] = 
+{
+    "Volume    5         ",   //i_menu = 1;
+    "Bass      5         ",
+    "Mid       5         ",                     
+    "Treble    5         "
+};
+
 //********************unsigned char LCD_inc_pos_curseur (void)****************//
 //Description : Function increments cursor and return its new value
 //Function prototype : unsigned char LCD_inc_pos_curseur (void)
@@ -192,7 +201,7 @@ char * LCD_get_menu (void)
 //Jean-Francois Bilodeau    MPLab X v3.45    27-02-2018 
 // Changelog :
 //****************************************************************************//
-void LCD_init (SPI_PERIPHERAL_S *peripheral)
+char *LCD_init (SPI_PERIPHERAL_S *peripheral)
 {
     lcdSpi = peripheral; // Link the spi peripheral with the LCD functions
               
@@ -227,6 +236,8 @@ void LCD_init (SPI_PERIPHERAL_S *peripheral)
     __delay_ms(10);             
     LCD_write_data(0, 0x02); // return home
     __delay_ms(10); 
+    
+    return(menu_main);
       
 } 
 
@@ -406,6 +417,7 @@ void LCD_write_menu(char * menu)
 {
     unsigned char uci = 0;
     unsigned char ucj = 0;
+    
     for (uci=1; uci<5; uci++)           //Faire 4 fois
     {        
         LCD_place_cursor_C0L1(0,uci);   //Place curseur col0, lign increm dans for

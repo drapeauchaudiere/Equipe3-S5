@@ -19,7 +19,6 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>main.c</itemPath>
-      <itemPath>lcd_spi.c</itemPath>
       <itemPath>gpio.c</itemPath>
       <itemPath>spi.c</itemPath>
       <itemPath>lcd.c</itemPath>
