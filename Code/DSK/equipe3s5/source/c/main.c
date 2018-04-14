@@ -39,18 +39,21 @@ static void initialization(void);
 
 int main(void)
 {
-
+    uint16_t counter=0;
+    float outputBuffer_check[64], *inputBuffer;
     //initialization();
 #ifdef PITCH_DEBUG
-    /*float constant = FRAME_OVERLAP;
-    constant = FRAME_HOP;
-    constant = NUMBER_FRAMES;
-    constant = FRAME_TABLE_SIZE;
-    constant = MAX_OUTPUT_HOP;
-    constant = TIME_STRETCHED_SIZE;
-    constant = WINDOW_CONSTANT;*/
-    //uint16_t buffer[512] = {1};
-    pitchShift((uint16_t *)buffer,12);
+
+    while(1)
+    {
+        inputBuffer = (float *)&buffer[counter*64];
+        pitchShift(inputBuffer,outputBuffer_check);
+        counter++;
+        if(counter > 32)
+        {
+            counter = 0;
+        }
+    }
 
 #elif
     while(1)

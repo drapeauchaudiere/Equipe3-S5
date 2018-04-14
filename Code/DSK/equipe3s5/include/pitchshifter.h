@@ -1,39 +1,35 @@
 /*
- * pitchshifter.h
+ * pitchshifterV2.h
  *
- *  Created on: Apr 3, 2018
+ *  Created on: Apr 11, 2018
  *      Author: simon
  */
 
-#ifndef PITCHSHIFTER_H_
-#define PITCHSHIFTER_H_
+#ifndef INCLUDE_PITCHSHIFTERV2_H_
+#define INCLUDE_PITCHSHIFTERV2_H_
 
 #include "definitions.h"
 
-#define NUMBER_SAMPLES      512  // 512 input samples
-#define WINDOW_SIZE         256  // Size of processing frames
-#define FRAME_HOP           (WINDOW_SIZE / 8)    // The hop is the distance between two frames (samples that aren't overlapped iwth the previous)
-#define FRAME_OVERLAP       (WINDOW_SIZE - FRAME_HOP)   // 87.5% overlap
-#define NUMBER_FRAMES       ((NUMBER_SAMPLES - WINDOW_SIZE) / (FRAME_HOP)+1)  // Number of frames overlapped in the samples
-#define FRAME_TABLE_SIZE    (WINDOW_SIZE * NUMBER_FRAMES)     // Size of the table to hold the frames
-#define MAX_OUTPUT_HOP      ((FRAME_HOP) * 2)   // 2^(10/12) -> 1.7818, step of 10, max is 12
-#define TIME_STRETCHED_SIZE (((NUMBER_FRAMES)*(MAX_OUTPUT_HOP))-(MAX_OUTPUT_HOP)+WINDOW_SIZE)   // Maximum size of the stretched samples
-#define WINDOW_CONSTANT     2 //(sqrt((WINDOW_SIZE/(FRAME_HOP))/2))
-static const float pi = 3.1416;
+#define FRAME_SIZE  256
+#define HOP_SIZE    64
+#define HOPOUT_SIZE 128
+static const float inputWindowConstant = 2;
+static const float outputWindowConstant = 1.1421;
+static const float pi = 3.14159;
 
-void pitchShift(uint16_t *samples, int8_t step);
-void splitFrames(uint16_t *samples, float *frames);
-void mergeFrames(float *samples, float *frames, uint16_t overlap);
-void windowFrame(uint16_t * samples, uint16_t *frames, uint16_t overlapConstant);
+void pitchShift(float *inSamples, float *outSamples);
+void windowFrame(float * samples, float constant);
+void shiftFrame(float *samples, float *buffer, float *currentFrame);
 void fftFrame(float *frame, int16_t *index);
-void ifftFrame(float *frame, float *phase,int16_t *index);
+void ifftFrame(float *frame, float *phase, int16_t *index);
 void frameMagnitudes(void);
 void framePhases(float *phases);
-void processFrame(float *phases, float *phaseCumul, uint16_t overlap);
-void interpolateSamples(uint16_t *samples, float *processedFrames, uint16_t step);
-float findAlpha(int8_t step);
+void processFrame(float *phases, float *phaseCumul, float *prevPhase);
+void mergeFrame(float *samples, float *fame);
+void interpolateSamples(float *outSamples, float *processedFrame);
 float angleModulo(float angle);
+void clearBuffer(float *buffer, uint16_t size);
 
 
 
-#endif /* INCLUDE_PITCHSHIFTER_H_ */
+#endif /* INCLUDE_PITCHSHIFTERV2_H_ */
