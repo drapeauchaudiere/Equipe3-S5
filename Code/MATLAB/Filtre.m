@@ -29,8 +29,8 @@ y =  filter(num, den, x);
 figure
 plot(Wgd,Gd)
 title('Delai de groupe')
-xlabel('Fréquence w')
-ylabel('Délai de groupe en sec')
+xlabel('Fréquence (rad/samples)')
+ylabel('Délai de groupe en samples')
 grid
 
 %Find TF filter
@@ -133,8 +133,8 @@ Theta_7000 = 2*7000/Fe;
 figure
 plot(Wgd,Gd)
 title('Delai de groupe')
-xlabel('Fréquence w')
-ylabel('Délai de groupe en sec')
+xlabel('Fréquence (rad/samples)')
+ylabel('Délai de groupe en samples')
 grid
 
 figure
@@ -187,5 +187,13 @@ figure
 freqz(B,A,10000,Fe)
 
 
+%Délai de groupe
+[Gd,Wgd] = grpdelay(B, A, 44100);
 
+figure
+plot(Wgd,Gd)
+title('Delai de groupe')
+xlabel('Fréquence (rad/samples)')
+ylabel('Délai de groupe en samples')
+grid
 
