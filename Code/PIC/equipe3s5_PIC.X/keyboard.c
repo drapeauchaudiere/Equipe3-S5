@@ -23,6 +23,8 @@ void checkKeys(EFFECT_CONFIG_U *effects, char *menu)
             if((PORTE&0x0F) != 0x0F)
             {
                 setEffects(PORTE,effects,menu); 
+                PORTE = regVal;
+                return;
             }
         }
     }

@@ -48,7 +48,7 @@ int main(void)
         {
             effectConfiguration.reg = SPI_read();       // Go read the SPI buffer
             DSK6713_LED_toggle(0);                      // Toggle LED0 when a packet is read
-            IRQ_clear(IRQ_EVT_RINT0);                   // Clear the interrupt flag
+            IRQ_clear(IRQ_EVT_XINT0);                   // Clear the interrupt flag
         }
     }
     return 0;
