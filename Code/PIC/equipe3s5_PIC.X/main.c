@@ -26,11 +26,16 @@ void main(void)
     SPI_init();
     INT_init();
     GPIO_init();
+<<<<<<< HEAD
     //main_menu = LCD_init(SPI_getPeripheral(SPI_INDEX_2));
+=======
+    main_menu = LCD_init(SPI_getPeripheral(SPI_INDEX_2));
+>>>>>>> 12dff8c7dbab35ac12ef38b2a58c3f731f24a2d5
     effects = EFFECTS_init(SPI_getPeripheral(SPI_INDEX_1));   
     
     while(1)
     {   
+<<<<<<< HEAD
         //checkKeys(effects, main_menu);        
         EFFECTS_send(effects);
         //LCD_place_cursor_C0L1(0,1);
@@ -39,6 +44,16 @@ void main(void)
         {
             __delay_ms(10);
         }*/
+=======
+        checkKeys(effects, main_menu);
+        EFFECTS_send(effects);
+        //LCD_place_cursor_C0L1(0,1);
+        LCD_write_menu(main_menu); 
+        for(timer=0; timer<10; timer++)
+        {
+            __delay_ms(10);
+        }
+>>>>>>> 12dff8c7dbab35ac12ef38b2a58c3f731f24a2d5
     }
     
     return;
