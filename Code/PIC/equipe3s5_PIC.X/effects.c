@@ -56,6 +56,9 @@ EFFECT_CONFIG_U *EFFECTS_init(SPI_PERIPHERAL_S *peripheral)
 void EFFECTS_send(EFFECT_CONFIG_U *config)
 {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 68df02d84424c34d803373b93798bc455caf12b2
     static index = 0;
     if(dskSpi->rxdata[0] == 0xFF)  // Check if the DSK sent an acknowledge
     {
