@@ -9,9 +9,7 @@
 #define	SPI_H
 
 #include "definitions.h"
-#include "gpio.h"
 
-#define SSP_MEMORY_JUMP 0xAD
 typedef enum e_spi_index
 {
     SPI_INDEX_1 = 0x0,
@@ -29,6 +27,7 @@ typedef enum e_spi_state
             
 }SPI_STATE_E;
 
+// SPI peripheral structure
 typedef struct s_spi_peripheral
 {
     SPI_INDEX_E index;
@@ -48,6 +47,7 @@ typedef struct s_spi_peripheral
         
 } SPI_PERIPHERAL_S;
 
+// SPI1 configuration
 #define SPI1_CLOCK      100 // kHz
 #define SPI1_PORT       &LATB
 #define SPI1_CS_PIN     2
@@ -65,6 +65,7 @@ SPI_PERIPHERAL_S SPI1_config =
     SPI1_INT_INDEX            
 };
 
+// SPI2 configuration
 #define SPI2_CLOCK      100     // kHz
 #define SPI2_PORT       &LATD
 #define SPI2_CS_PIN     3
@@ -82,25 +83,17 @@ SPI_PERIPHERAL_S SPI2_config =
     SPI2_INT_INDEX
 };
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
 
-    //void spi_init(SPI_INDEX_E peripheral);
-    void SPI_init(void);
-    void SPI_config(SPI_PERIPHERAL_S *peripheral);
-    void SPI_write(SPI_PERIPHERAL_S *peripheral);
-    uint8_t SPI2_read(uint8_t *data);
-    SPI_PERIPHERAL_S *SPI_getPeripheral(SPI_INDEX_E index);
-    void SPI_isr(SPI_INDEX_E index);
-
+// Function declarations
+void SPI_init(void);
+void SPI_config(SPI_PERIPHERAL_S *peripheral);
+void SPI_write(SPI_PERIPHERAL_S *peripheral);
+SPI_PERIPHERAL_S *SPI_getPeripheral(SPI_INDEX_E index);
+void SPI_isr(SPI_INDEX_E index);
     
     // Macros
 #define SPI_CLOCKRATE(clock)  (64000000/(clock*4000))-1 // clock = Fosc/(4*(SSPxADD+1))
 
-#ifdef	__cplusplus
-}
-#endif
 
 #endif	/* SPI_H */
 

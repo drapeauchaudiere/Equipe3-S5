@@ -12,12 +12,8 @@
 
 void GPIO_init(void)
 {
-    TRISE = 0x0;
-    LATE = 0x0;
-    TRISE = 0xFF;
+    TRISE = 0x0F;   // RE4-RE7 : output, RE0-RE3 : input
+    PORTE = 0xF0;    // Outputs to 1
+    PORTE = 0xF0;
 }
 
-uint8_t GPIO_getPort(uint16_t port)
-{
-    return *(uint16_t *)port;
-}

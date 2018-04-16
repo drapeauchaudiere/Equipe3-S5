@@ -31,10 +31,10 @@ SPI_PERIPHERAL_S *lcdSpi;            // Pointer towards the SPI peripheral of th
 // Menu constants
 char menu_main[4][20] = 
 {
-    "Volume    5         ",   //i_menu = 1;
-    "Bass      5         ",
-    "Mid       5         ",                     
-    "Treble    5         "
+    " Volume    5        ",   //i_menu = 1;
+    " Bass      5        ",
+    " Mid       5        ",                     
+    " Treble    5        "
 };
 
 //********************unsigned char LCD_inc_pos_curseur (void)****************//
@@ -420,7 +420,7 @@ void LCD_write_menu(char * menu)
     
     for (uci=1; uci<5; uci++)           //Faire 4 fois
     {        
-        LCD_place_cursor_C0L1(0,uci);   //Place curseur col0, lign increm dans for
+        //LCD_place_cursor_C0L1(0,uci);   //Place curseur col0, lign increm dans for
         for (ucj=0; ucj<20; ucj++)      //Faire 20 fois
         {
             LCD_write_char(*menu);        //Affiche le caractere pointé dans chaine
