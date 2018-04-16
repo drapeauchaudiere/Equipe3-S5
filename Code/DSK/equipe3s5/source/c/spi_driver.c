@@ -23,7 +23,7 @@ MCBSP_Config MCBSP_SPIConfig = {
         MCBSP_FMKS(SPCR, SOFT, YES)              |   // Serial port stops immediately during emulation halt
         MCBSP_FMKS(SPCR, FRST, YES)             |   // Enable frame sync generator
         MCBSP_FMKS(SPCR, GRST, YES)             |   // Enable sample-rate generator
-        MCBSP_FMKS(SPCR, XINTM, XRDY)           |   // XINT is driven by XRDY (end of word)
+        MCBSP_FMKS(SPCR, XINTM, FRM)           |   // XINT is driven by XRDY (end of word)
         MCBSP_FMKS(SPCR, XSYNCERR, NO)          |   // No synchronization error is detected
         MCBSP_FMKS(SPCR, XRST, YES)             |   // Serial port transmitter is enable
         MCBSP_FMKS(SPCR, DLB, OFF)              |   // Digital loop back mode is disable
@@ -146,8 +146,9 @@ interrupt void c_int05(void)
 ****************************************************************************/
 void init_rint0_intr(void)
 {
-    IRQ_map(IRQ_EVT_RINT0,5);
-    IRQ_reset(IRQ_EVT_RINT0);
+    IRQ_map(IRQ_EVT_XINT0,5);
+    IRQ_reset(IRQ_EVT_XINT0);
+
 
     //IRQ_enable(IRQ_EVT_RINT0);    // Interrupt processing is initiated by polling
 }
