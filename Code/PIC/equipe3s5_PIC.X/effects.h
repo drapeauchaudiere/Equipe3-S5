@@ -21,13 +21,14 @@ typedef union u_effect_config
     uint8_t raw[4];
     struct
     {
-        unsigned outputIsEnabled:1;
-        unsigned effectsAreEnabled:1;
-        unsigned gain:6;             // Global output volume gain
-        unsigned lowGain:4;          // Low freq filter gain
-        unsigned midGain:4;          // Mid freq filter gain
-        unsigned highGain:4;         // High freq filter gain
-        unsigned octave:4;           // Octave multiplier
+        bool outputIsEnabled:1;
+        bool effectsAreEnabled:1;
+        uint8_t gain:6;             // Global output volume gain
+        uint8_t lowGain:4;          // Low freq filter gain
+        uint8_t midGain:4;          // Mid freq filter gain
+        uint8_t highGain:4;         // High freq filter gain
+        bool octave:1;              // Octave multiplier
+        uint8_t rsvd3:3;
         uint8_t  rsvd;
     } fields;
 

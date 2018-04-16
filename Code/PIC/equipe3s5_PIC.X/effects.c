@@ -46,6 +46,7 @@ EFFECT_CONFIG_U *EFFECTS_init(SPI_PERIPHERAL_S *peripheral)
     effectConfiguration.fields.rsvd = 0;
     
     EFFECTS_send(&effectConfiguration);
+    return &effectConfiguration;
     
 }
 

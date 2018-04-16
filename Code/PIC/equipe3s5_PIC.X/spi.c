@@ -92,10 +92,6 @@ void SPI_write(SPI_PERIPHERAL_S *peripheral)
     
 }
 
-uint8_t SPI2_read(uint8_t *data)
-{
-    
-}
 
 SPI_PERIPHERAL_S *SPI_getPeripheral(SPI_INDEX_E index)
 {
