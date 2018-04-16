@@ -26,19 +26,19 @@ void main(void)
     SPI_init();
     INT_init();
     GPIO_init();
-    main_menu = LCD_init(SPI_getPeripheral(SPI_INDEX_2));
+    //main_menu = LCD_init(SPI_getPeripheral(SPI_INDEX_2));
     effects = EFFECTS_init(SPI_getPeripheral(SPI_INDEX_1));   
     
     while(1)
     {   
-        checkKeys(effects, main_menu);
+        //checkKeys(effects, main_menu);        
         EFFECTS_send(effects);
         //LCD_place_cursor_C0L1(0,1);
-        LCD_write_menu(main_menu); 
-        for(timer=0; timer<10; timer++)
+        //LCD_write_menu(main_menu); 
+        /*for(timer=0; timer<10; timer++)
         {
             __delay_ms(10);
-        }
+        }*/
     }
     
     return;

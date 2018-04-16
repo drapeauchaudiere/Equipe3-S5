@@ -23,6 +23,7 @@ void SPI_init(void);
 void SPI_write(uint8_t data);
 uint32_t SPI_read(void);
 bool SPI_rrdy(void);
+bool SPI_rsyncerror(void);
 
 void c_McBSP0Rx_ISR(void);
 

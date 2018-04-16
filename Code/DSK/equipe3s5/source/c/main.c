@@ -41,12 +41,20 @@ static void initialization(void);
 
 int main(void)
 {
+    uint8_t index = 0;
+    bool state = 0;
     initialization();
     while(1)
     {
-        if(getIFRASM() & INT_IF5)                   // If a new configuration has been sent,
+        if((getIFRASM() & INT_IF5) && !SPI_rsyncerror())                   // If a new configuration has been sent,
         {
-            effectConfiguration.reg = SPI_read();       // Go read the SPI buffer
+            SPI_write(0xFF);                                    // Return value to PIC
+            effectConfiguration.raw[index] = SPI_read();        // Go read the SPI buffer
+            index++;                                            // Increment table index
+            if(index == 3)
+            {
+                index = 0;
+            }
             DSK6713_LED_toggle(0);                      // Toggle LED0 when a packet is read
             IRQ_clear(IRQ_EVT_XINT0);                   // Clear the interrupt flag
         }

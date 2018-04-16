@@ -87,11 +87,8 @@ void SPI_write(SPI_PERIPHERAL_S *peripheral)
     peripheral->state = SPI_STATE_BUSY;     // Reserve the peripheral
     peripheral->txcount = 1;                // Reset the transmit count
     *((uint16_t *)peripheral->intreg) = *((uint16_t *)peripheral->intreg) | (1 << peripheral->intindex);   // Enable interrupt
-    *(&SSP1BUF-(peripheral->index * 0xC6)) = peripheral->txdata[0];     // Send the first byte
-    
-    
+    *(&SSP1BUF-(peripheral->index * 0xC6)) = peripheral->txdata[0];     // Send the first byte       
 }
-
 
 SPI_PERIPHERAL_S *SPI_getPeripheral(SPI_INDEX_E index)
 {
@@ -102,11 +99,15 @@ void SPI_isr(SPI_INDEX_E index)
 {
     if(SPI[index].txsize > SPI[index].txcount)
     {
+        SPI[index].rxdata[SPI[index].rxcount] = *(&SSP1BUF-(index * 0xC6));
+        SPI[index].rxcount++;
         *(&SSP1BUF-(index * 0xC6)) = SPI[index].txdata[SPI[index].txcount];
         SPI[index].txcount++;
     }
     else
     {
+        SPI[index].rxdata[SPI[index].rxcount] = *(&SSP1BUF-(index * 0xC6));
+        SPI[index].rxcount++;
         *((uint16_t *)SPI[index].port) = *((uint16_t *)SPI[index].port) | (1 << SPI[index].pin);   // Deassert CS
         *((uint16_t *)SPI[index].intreg) = *((uint16_t *)SPI[index].intreg) & (~(1 << SPI[index].intindex));   // Disable interrupts
         SPI[index].state = SPI_STATE_IDLE;      // Free the peripheral
