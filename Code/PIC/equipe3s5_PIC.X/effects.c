@@ -70,4 +70,9 @@ void EFFECTS_send(EFFECT_CONFIG_U *config)
         dskSpi->txsize = 1;
         SPI_write(dskSpi);
     }
+=======
+    dskSpi->txdata = config->raw;
+    dskSpi->txsize = 4;
+    SPI_write(dskSpi);
+>>>>>>> 12dff8c7dbab35ac12ef38b2a58c3f731f24a2d5
 }

@@ -87,8 +87,16 @@ void SPI_write(SPI_PERIPHERAL_S *peripheral)
     peripheral->state = SPI_STATE_BUSY;     // Reserve the peripheral
     peripheral->txcount = 1;                // Reset the transmit count
     *((uint16_t *)peripheral->intreg) = *((uint16_t *)peripheral->intreg) | (1 << peripheral->intindex);   // Enable interrupt
+<<<<<<< HEAD
     *(&SSP1BUF-(peripheral->index * 0xC6)) = peripheral->txdata[0];     // Send the first byte       
 }
+=======
+    *(&SSP1BUF-(peripheral->index * 0xC6)) = peripheral->txdata[0];     // Send the first byte
+    
+    
+}
+
+>>>>>>> 12dff8c7dbab35ac12ef38b2a58c3f731f24a2d5
 
 SPI_PERIPHERAL_S *SPI_getPeripheral(SPI_INDEX_E index)
 {
