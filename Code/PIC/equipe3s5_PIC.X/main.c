@@ -11,52 +11,47 @@
 #include "spi.h"
 #include "effects.h"
 #include "keyboard.h"
+#include "uart.h"
 #include "config_bits.h"
 
 void PIC_init(void);
 void INT_init(void);
 
+bool uartFlag = 0;
+
 void main(void) 
 {        
     EFFECT_CONFIG_U *effects;
     char *main_menu;
-    uint8_t timer;
+    uint8_t timer = 0;
+    uint8_t index = 0;
     
     PIC_init();
     SPI_init();
     INT_init();
     GPIO_init();
-<<<<<<< HEAD
-    //main_menu = LCD_init(SPI_getPeripheral(SPI_INDEX_2));
-=======
+    UART_init();
     main_menu = LCD_init(SPI_getPeripheral(SPI_INDEX_2));
->>>>>>> 12dff8c7dbab35ac12ef38b2a58c3f731f24a2d5
-    effects = EFFECTS_init(SPI_getPeripheral(SPI_INDEX_1));   
+    effects = EFFECTS_init(UART_getPeripheral(UART_INDEX_1));   
     
     while(1)
     {   
-<<<<<<< HEAD
-        //checkKeys(effects, main_menu);        
-        EFFECTS_send(effects);
-        //LCD_place_cursor_C0L1(0,1);
-        //LCD_write_menu(main_menu); 
-        /*for(timer=0; timer<10; timer++)
-        {
-            __delay_ms(10);
-        }*/
-=======
         checkKeys(effects, main_menu);
-        EFFECTS_send(effects);
-        //LCD_place_cursor_C0L1(0,1);
+        if(uartFlag)
+        {
+            index = UART_read();
+            if((index&0xF0) == 0xA0)
+            {              
+                EFFECTS_send((index&0x0F));
+            }
+            uartFlag = 0;
+        }
         LCD_write_menu(main_menu); 
         for(timer=0; timer<10; timer++)
         {
             __delay_ms(10);
         }
->>>>>>> 12dff8c7dbab35ac12ef38b2a58c3f731f24a2d5
     }
-    
-    return;
 }
 
 void PIC_init(void)
@@ -77,12 +72,15 @@ void INT_init(void)
 
 void interrupt low_priority low_isr(void)
 {
-    if(PIR1bits.SSP1IF & PIE1bits.SSP1IE)
+    // UART Rx interrupt
+    if(PIE1bits.RC1IE && PIR1bits.RC1IF)
     {
-        SPI_isr(SPI_INDEX_1);
-        PIR1bits.SSP1IF = 0;
+        uartFlag = 1;
+        PIE1bits.RC1IE = 0;
+        PIR1bits.RC1IF = 0;
     }
     
+    // SPI2 interrupt
     if(PIR2bits.SSP2IF & PIE2bits.SSP2IE)
     {
         SPI_isr(SPI_INDEX_2);

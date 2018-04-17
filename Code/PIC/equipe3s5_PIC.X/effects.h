@@ -13,30 +13,33 @@ extern "C" {
 #endif
     
 #include "definitions.h"
-#include "spi.h"
+#include "uart.h"
 
 typedef union u_effect_config
 {
-    uint32_t reg;
-    uint8_t raw[4];
+    uint8_t raw[5];
     struct
     {
         bool outputIsEnabled:1;
         bool effectsAreEnabled:1;
-        uint8_t gain:6;             // Global output volume gain
+        bool octave:1;
+        bool rsvd:1;
+        uint8_t code1:4;
+        uint8_t gain:4;             // Global output volume gain
+        uint8_t code2:4;
         uint8_t lowGain:4;          // Low freq filter gain
+        uint8_t code3:4;
         uint8_t midGain:4;          // Mid freq filter gain
+        uint8_t code4:4;
         uint8_t highGain:4;         // High freq filter gain
-        bool octave:1;              // Octave multiplier
-        uint8_t rsvd3:3;
-        uint8_t  rsvd;
+        uint8_t code5:4;
     } fields;
 
 } EFFECT_CONFIG_U;
 
 
-EFFECT_CONFIG_U *EFFECTS_init(SPI_PERIPHERAL_S *peripheral);
-void EFFECTS_send(EFFECT_CONFIG_U *config);
+EFFECT_CONFIG_U *EFFECTS_init(UART_PERIPHERAL_S *peripheral);
+void EFFECTS_send(uint8_t index);
 
 #ifdef	__cplusplus
 }

@@ -14,12 +14,10 @@ void checkKeys(EFFECT_CONFIG_U *effects, char *menu)
     
     for(i=0; i<4; i++)
     {
-        PORTE = regVal & (~(1 <<(7-i)));
-        //PORTE = regVal & (~(1 <<(7-i)));
-        //PORTE = regVal & (~(1 <<(7-i)));   
+        PORTE = regVal & (~(1 <<(7-i)));  
         if((PORTE&0x0F) != 0x0F)
         {
-            __delay_ms(30);            
+            __delay_ms(30);
             if((PORTE&0x0F) != 0x0F)
             {
                 setEffects(PORTE,effects,menu); 

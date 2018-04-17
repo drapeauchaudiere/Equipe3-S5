@@ -14,32 +14,14 @@ SPI_PERIPHERAL_S SPI[SPI_NUMBER];
 void SPI_init(void)
 {        
     // Pin configuration
-        // SPI1
-    TRISBbits.TRISB2 = 0;   // SS : Output
-    TRISBbits.TRISB3 = 0;   // SCLK : Output
-    TRISBbits.TRISB4 = 1;   // MISO : Input
-    TRISBbits.TRISB5 = 0;   // MOSI : Output
-    
-        // SPI2    
+    // SPI2    
     TRISDbits.TRISD1 = 1;   // MISO : Input
     TRISDbits.TRISD2 = 0;   // SCLK : Output
     TRISDbits.TRISD3 = 0;   // SS : Output
     TRISDbits.TRISD4 = 0;   // MOSI : Output
     
     // PPS-Lite configuration of GPIO pins to SPI peripherial
-        // SPI1
-    //RPOR12_13<7:4> = 0x4   --> RP13 = SDO1 (output)
-    RPOR12_13 |= 0x40; 
-    RPOR12_13 &= 0x4F;
-    //RPOR6_7<7:4> = 0x3     --> RP7 = SCK1 (output)
-    RPOR6_7 |= 0x30;
-    RPOR6_7 &= 0x3F;
-    //RPINR8_9<7:4> = 0x3    --> RP12 = SDI1 (input)
-    RPINR8_9 |= 0x30;
-    RPINR8_9 &= 0x3F;
-    
-    
-        // SPI2
+    // SPI2
     //RPOR24_25<3:0> = 0x4    --> RP24 = SDO2 (output)
     RPOR24_25 |= 0x04; 
     RPOR24_25 &= 0xF4;
@@ -50,15 +32,13 @@ void SPI_init(void)
     RPINR12_13 |= 0x05;
     RPINR12_13 &= 0xF5;
         
-    SPI[SPI_INDEX_1] = SPI1_config;
+//    SPI[SPI_INDEX_1] = SPI1_config;
     SPI[SPI_INDEX_2] = SPI2_config;
     
-    SPI_config(&SPI[SPI_INDEX_1]);
+//    SPI_config(&SPI[SPI_INDEX_1]);
     SPI_config(&SPI[SPI_INDEX_2]);
     
-    //PIE1bits.SSP1IE = 1;    // Enable the SPI1 interrupt
-    IPR1bits.SSP1IP = 0;    // High priority
-    //PIE2bits.SSP2IE = 1;    // Enable the SPI2 interrupt
+    //IPR1bits.SSP1IP = 0;    // High priority
     IPR2bits.SSP2IP = 0;    // Low priority
     
 }
@@ -87,16 +67,8 @@ void SPI_write(SPI_PERIPHERAL_S *peripheral)
     peripheral->state = SPI_STATE_BUSY;     // Reserve the peripheral
     peripheral->txcount = 1;                // Reset the transmit count
     *((uint16_t *)peripheral->intreg) = *((uint16_t *)peripheral->intreg) | (1 << peripheral->intindex);   // Enable interrupt
-<<<<<<< HEAD
     *(&SSP1BUF-(peripheral->index * 0xC6)) = peripheral->txdata[0];     // Send the first byte       
 }
-=======
-    *(&SSP1BUF-(peripheral->index * 0xC6)) = peripheral->txdata[0];     // Send the first byte
-    
-    
-}
-
->>>>>>> 12dff8c7dbab35ac12ef38b2a58c3f731f24a2d5
 
 SPI_PERIPHERAL_S *SPI_getPeripheral(SPI_INDEX_E index)
 {
@@ -107,15 +79,11 @@ void SPI_isr(SPI_INDEX_E index)
 {
     if(SPI[index].txsize > SPI[index].txcount)
     {
-        SPI[index].rxdata[SPI[index].rxcount] = *(&SSP1BUF-(index * 0xC6));
-        SPI[index].rxcount++;
         *(&SSP1BUF-(index * 0xC6)) = SPI[index].txdata[SPI[index].txcount];
         SPI[index].txcount++;
     }
     else
     {
-        SPI[index].rxdata[SPI[index].rxcount] = *(&SSP1BUF-(index * 0xC6));
-        SPI[index].rxcount++;
         *((uint16_t *)SPI[index].port) = *((uint16_t *)SPI[index].port) | (1 << SPI[index].pin);   // Deassert CS
         *((uint16_t *)SPI[index].intreg) = *((uint16_t *)SPI[index].intreg) & (~(1 << SPI[index].intindex));   // Disable interrupts
         SPI[index].state = SPI_STATE_IDLE;      // Free the peripheral

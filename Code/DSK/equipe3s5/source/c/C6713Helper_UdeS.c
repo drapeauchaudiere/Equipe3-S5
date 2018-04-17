@@ -110,6 +110,7 @@ void comm_poll()					//added for communication/init using polling
 void CODEC_start() {
 	  DSK6713_init();
 
+	  config.regs[4] = inputsource;
 	 hAIC23_handle=DSK6713_AIC23_openCodec(0, &config); //handle(pointer) to codec
 	 DSK6713_AIC23_setFreq(hAIC23_handle, fs);  //set sample rate
 	 MCBSP_config(DSK6713_AIC23_DATAHANDLE,&AIC23CfgData);//interface 32 bits toAIC23

@@ -31,7 +31,7 @@ Uint16 inputsource=DSK6713_AIC23_INPUT_LINE; // Selection de l'entrée LINE IN
 ****************************************************************************/
 void AUDIO_init(void)
 {
-    comm_intr(fs,DSK6713_AIC23_INPUT_LINE);
+    comm_intr(fs,inputsource);
 }
 
 void AUDIO_adcRead(uint16_t *pSample)

@@ -22,10 +22,8 @@ static const uint32_t max_buffer_size = 160000;     // 16k samples / seconds * 1
 ****************************************************************************/
 
 extern far void vectors();  // Vecteurs d'interruption
-extern bool spiRxFlag;      // SPI received data is ready
 extern bool aic23AdcFlag;   // ADC data is ready
 extern EFFECT_CONFIG_U effectConfiguration;
-
 
 uint32_t getIFRASM(void);
 
@@ -39,27 +37,31 @@ static void initialization(void);
     Main Program :
 ****************************************************************************/
 
-int main(void)
+void main(void)
 {
-    uint8_t index = 0;
-    bool state = 0;
+    uint8_t value = 0, index = 0;
+    bool txReady = 1;
     initialization();
     while(1)
     {
-        if((getIFRASM() & INT_IF5) && !SPI_rsyncerror())                   // If a new configuration has been sent,
+        SPI_write(0xA0 | (index));
+        if(SPI_rrdy())                   // Data write has been sent and received by MAX3111
         {
-            SPI_write(0xFF);                                    // Return value to PIC
-            effectConfiguration.raw[index] = SPI_read();        // Go read the SPI buffer
-            index++;                                            // Increment table index
-            if(index == 3)
+            // Read config pour voir si bit 15 (Read ready) est 1
+            value = SPI_read();        // Go read the SPI buffer
+            if((value&0xF0) ==  (0xB0+index*0x10))
             {
-                index = 0;
+                effectConfiguration.raw[index] = (value & 0x0F);
+                index++;                                            // Increment table index
+                if(index == 5)
+                {
+                    index = 0;
+                }
+                txReady = 1;
             }
-            DSK6713_LED_toggle(0);                      // Toggle LED0 when a packet is read
-            IRQ_clear(IRQ_EVT_XINT0);                   // Clear the interrupt flag
+            DSK6713_LED_toggle(0);
         }
     }
-    return 0;
 }
 
 
