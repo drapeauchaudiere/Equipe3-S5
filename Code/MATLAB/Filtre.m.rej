@@ -1,0 +1,12 @@
+diff a/Code/MATLAB/Filtre.m b/Code/MATLAB/Filtre.m	(rejected hunks)
+@@ -29,8 +29,8 @@
+ figure
+ plot(Wgd,Gd)
+ title('Delai de groupe')
+-xlabel('Fr�quence w')
+-ylabel('D�lai de groupe en sec')
++xlabel('Fr�quence (rad/samples)')
++ylabel('D�lai de groupe en samples')
+ grid
+ 
+ %Find TF filter
