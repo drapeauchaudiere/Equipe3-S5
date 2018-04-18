@@ -9,16 +9,18 @@
 #define IIR_NB_SECTIONS_MAX 4   // nb de sections d'ordre 2 du plus gros filtre
 
 const short IIR_COEFFS[][IIR_NB_COEFFS] = {
-    // 1er filtre (ordre 4, ripple de 3dB, fc = 700Hz, fe = 44100 Hz)
-        {   2048, 4096, 2048, 8192, -15230, 7114},
-    // 2e filtre (ordre 4, ripple de 3dB, fc = 5000Hz, fe = 44100 Hz)
-        {  2068, 4135, 2068, 8192,-8480,3013},
-    // 3e filtre (ordre 4, ripple de 3dB, fc = 7000Hz, fe = 44100 Hz)
-        {  7203, -14406, 7203, 8192, -5577, 2087},
-    // 4e filtre (ordre 4, ripple de 3dB, fc = 1000Hz, fe = 44100 Hz)
-        {   15469, -30938, 15469, 8192, -14738, 6697},
+// 1er filtre (ordre 4, ripple de 3dB, fc = 700Hz, fe = 24000 Hz)
+    {   2048, 4096, 2048, 8192, -14271, 6322},
+// 2e filtre (ordre 4, ripple de 3dB, fc = 5000Hz, fe = 24000 Hz)
+    {   2377, 4753, 2377, 8192, -2520, 1543},
+// 3e filtre (ordre 4, ripple de 3dB, fc = 7000Hz, fe = 24000 Hz)
+    {  2377, -4753, 2377, 8192, 2520, 1543},
+// 4e filtre (ordre 4, ripple de 3dB, fc = 1000Hz, fe = 24000 Hz)
+    { 4545, -9091, 4545, 8192, -13377, 5657 },
 };
-const short IIR_GAINS[IIR_NB_FILTRES] = {76 ,2699, 4508, 3922}; // À COMPLÉTER
+
+// Gain global de chacun des filtres (format : 2Q13)
+const short IIR_GAINS[IIR_NB_FILTRES] = {243, 12268, 6218, 6218}; // À COMPLÉTER
 
 #pragma DATA_ALIGN(IIR_W, 4);
 int IIR_W[IIR_NB_SECTIONS_MAX][3] = {0};

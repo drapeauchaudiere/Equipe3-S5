@@ -33,7 +33,7 @@ short gainPhaut = 1;
 short gainPbande = 1;
 
 // VARIABLES GLOBALES POUR DSK
-Uint32 fs=DSK6713_AIC23_FREQ_44KHZ;           // Fréquence d'échantillonnage
+Uint32 fs=DSK6713_AIC23_FREQ_24KHZ;           // Fréquence d'échantillonnage
 #define DSK6713_AIC23_INPUT_LINE 0x0011      // Définition de l'entrée LINE IN
 Uint16 inputsource=DSK6713_AIC23_INPUT_LINE; // Selection de l'entrée LINE IN
 
@@ -67,7 +67,7 @@ interrupt void c_aic23_ISR(void)
     short pitchshifterTEST = 1;
 
     // Capture de l'échantillon provenant de l'entrée "IN"
-    echLineIn = (short)input_sample();
+    echLineIn = input_sample();
 
     //Filtrage de l'équalizer
     echFiltrer700 = effectConfiguration.fields.lowGain*(FPB_700(echLineIn));
@@ -75,17 +75,11 @@ interrupt void c_aic23_ISR(void)
     echFiltrer1000_5000 = effectConfiguration.fields.midGain*(FPB_1000_5000(echLineIn));
     output = echFiltrer700 + echFiltrer7000 + echFiltrer1000_5000;
 
-    if(!pitchshifterTEST){
-        //sortie de l'équalizer dans canal gauche
-        AIC23_output.channel[LEFT] = (short)(output);
-        //Échantillon IN dans la sortie
-        AIC23_output.channel[RIGHT] = echLineIn ;
-    }else{
-        //sortie de l'équalizer dans canal gauche
-        AIC23_output.channel[LEFT] = (short)(output)*effectConfiguration.fields.gain;///METTRE LE OUPTPUT DU PITCHSHIFTER!!!!!!!!!!!
-        //Échantillon IN dans la sortie
-        AIC23_output.channel[RIGHT] = echLineIn*effectConfiguration.fields.gain;
-    }
+    //sortie de l'équalizer dans canal gauche
+    AIC23_output.channel[LEFT] = (short)(output)*effectConfiguration.fields.gain;
+    //Échantillon IN dans la sortie
+    AIC23_output.channel[RIGHT] = (short)4*echLineIn*effectConfiguration.fields.gain;
+
 
     // Sortir les deux signaux sur "HP/OUT"
     output_sample(AIC23_output.uint);
