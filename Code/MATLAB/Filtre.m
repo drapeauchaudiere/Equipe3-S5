@@ -2,7 +2,7 @@ clear all
 close all
 clc
 
-Fe = 16000;
+Fe = 44100;
 %% Filtre passe-bas 700 Hz
 clc
 close all
@@ -14,7 +14,7 @@ Theta_700 = 2*700/Fe;
 
 H2 = tf(B, A);
 
-%[num, den] = tfdata(H2, 'v');
+
 
 n =  1:1000;
 x = cos(2*pi*n*2000/Fe);
@@ -27,6 +27,8 @@ hold on
 plot (n, x, 'b')
 
 %Délai de groupe
+[num, den] = tfdata(H2, 'v');
+
 [Gd,Wgd] = grpdelay(num, den);
 
 figure
@@ -89,9 +91,22 @@ gain_global_Phaut = gain_global_Phaut * 26;
 figure
 freqz(B,A,10000,Fe);
 
+
 [B,A] = sos2tf(sos_Pbas, gain_global_Pbas);
 figure
 freqz(B,A,10000,Fe);
+
+
+n =  1:1000;
+x = cos(2*pi*n*4000/Fe);
+
+y =  filter(B, A, x);
+
+figure
+subplot(2,1,1)
+plot(n, y, 'r')
+subplot(2,1,2)
+plot (n, x, 'b')
 
 % B1 = round(sos_Phaut(1:3)*2^13)	% B1
 % A1 = round(sos_Phaut(4:6)*2^13)	% A1
@@ -134,8 +149,19 @@ close all
 
 Theta_7000 = 2*7000/Fe;
 [A,B,C,D] = butter(2,Theta_7000,'high');
-[sos7000 gain_global7000] = ss2sos(A,B,C,D, 'up', 'inf');
+[sos7000, gain_global7000] = ss2sos(A,B,C,D, 'up', 'inf');
 [B,A] = sos2tf(sos7000, gain_global7000);
+
+n =  1:1000;
+x = cos(2*pi*n*8000/Fe);
+
+y =  filter(B, A, x);
+
+figure
+subplot(2,1,1)
+plot(n, y, 'r')
+subplot(2,1,2)
+plot (n, x, 'b')
 
 %Délai de groupe
 [Gd,Wgd] = grpdelay(sos7000);
@@ -187,7 +213,7 @@ y_bande = filter(num,den,n);
 [num,den] = tfdata(H_Phaut,'v');
 y_haut = filter(num,den,n);
 
-y = y_bas + y_bande + y_haut;
+y = y_bas - y_bande + y_haut;
 
 figure
 plot(x,y)
