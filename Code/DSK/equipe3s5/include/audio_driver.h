@@ -10,7 +10,7 @@
 
 #include "definitions.h"
 #include "effects.h"
-
+#include "filter.h"
 
 extern uint8_t recordingState;  // State-Machine variable
 static const uint32_t max_record_size = 80000;      // 80 000 samples

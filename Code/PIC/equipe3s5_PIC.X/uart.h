@@ -36,7 +36,7 @@ void UART_init(void);
 void UART_config(void);
 void UART_write(unsigned char data);
 uint8_t UART_read(void);
-void UART_errorCheck(void);
+bool UART_errorCheck(void);
 UART_PERIPHERAL_S *UART_getPeripheral(UART_INDEX_E index);
 
 

@@ -37,7 +37,10 @@ EFFECT_CONFIG_U *EFFECTS_init(UART_PERIPHERAL_S *peripheral)
 
 void EFFECTS_send(uint8_t index)
 {
-    uint8_t value = effectConfiguration.raw[index];
-    UART_write((value & 0x0F) | (0xB0+index*0x10));
+    if(index < 5)
+    {
+        uint8_t value = effectConfiguration.raw[index];
+        UART_write((value & 0x0F) | (0xA0+index*0x10));
+    }
 
 }

@@ -13,7 +13,6 @@
 void GPIO_init(void)
 {
     TRISE = 0x0F;   // RE4-RE7 : output, RE0-RE3 : input
-    PORTE = 0xF0;    // Outputs to 1
-    PORTE = 0xF0;
+    PORTE = 0x00;    // Outputs to 1
 }
 
