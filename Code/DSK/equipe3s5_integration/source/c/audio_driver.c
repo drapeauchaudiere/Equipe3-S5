@@ -21,6 +21,15 @@ bool aic23AdcFlag = 0;
 union {uint32_t uint; uint16_t channel[2];} AIC23_output;     // Holds left and right output samples
 uint16_t AIC23_input;   // Holds the ADC sample
 
+// PitchShifter variables
+float pitchShifterBuffer_Input0[BUFFER_SIZE];
+float pitchShifterBuffer_Input1[BUFFER_SIZE];
+float pitchShifterBuffer_Out0[BUFFER_SIZE];
+float pitchShifterBuffer_Out1[BUFFER_SIZE];
+
+bool newTrameFlagBuf0 = 0;
+bool newTrameFlagBuf1= 0;
+
 // Filter variables
 float echFiltrer700;
 float echFiltrer1000;
@@ -33,15 +42,19 @@ short gainPhaut = 1;
 short gainPbande = 1;
 
 // VARIABLES GLOBALES POUR DSK
-Uint32 fs=DSK6713_AIC23_FREQ_24KHZ;           // Fréquence d'échantillonnage
+Uint32 fs=DSK6713_AIC23_FREQ_16KHZ;           // Fréquence d'échantillonnage
 #define DSK6713_AIC23_INPUT_LINE 0x0011      // Définition de l'entrée LINE IN
-Uint16 inputsource=DSK6713_AIC23_INPUT_LINE; // Selection de l'entrée LINE IN
+Uint16 inputsource=DSK6713_AIC23_INPUT_MIC; // Selection de l'entrée LINE IN
 
 /****************************************************************************
     Public functions :
 ****************************************************************************/
 void AUDIO_init(void)
 {
+    tableClear(pitchShifterBuffer_Input0,BUFFER_SIZE);
+    tableClear(pitchShifterBuffer_Input1,BUFFER_SIZE);
+    tableClear(pitchShifterBuffer_Out0,BUFFER_SIZE);
+    tableClear(pitchShifterBuffer_Out1,BUFFER_SIZE);
     comm_intr(fs,inputsource);
 }
 
@@ -61,7 +74,7 @@ void AUDIO_dacWrite(uint16_t *pSample)
     Interrupt Service Routines :
 ****************************************************************************/
 
-interrupt void c_aic23_ISR(void)
+/*interrupt void c_aic23_ISR(void)
 {
     short echLineIn;     // Ampliutde de l'échantillon provenant de l'entrée LINE IN
     short pitchshifterTEST = 1;
@@ -84,12 +97,55 @@ interrupt void c_aic23_ISR(void)
     // Sortir les deux signaux sur "HP/OUT"
     output_sample(AIC23_output.uint);
 
-}
-
-/*
-aic23AdcFlag = 1;                 // Set the conversion ready flag
-
-if(effectConfiguration.fields.outputIsEnabled)
-{
-    output_sample(AIC23_output.uint); // Output the modified sample
 }*/
+
+interrupt void c_aic23_ISR(void)
+{
+    static int index = 0;
+    static int playBuffState = 0;
+    int sample = 0;
+    int outputAudio = 0;
+    sample  = input_left_sample();
+
+
+    if (playBuffState == 0)
+    {
+        if (index < BUFFER_SIZE)
+        {
+            pitchShifterBuffer_Input1[index] = input_left_sample();
+            sample = 0.01*pitchShifterBuffer_Out1[index];
+            index ++;
+        }
+        else
+        {
+            index = 0;
+            newTrameFlagBuf0 = 1;
+            playBuffState = 1;
+        }
+
+    }
+
+    if (playBuffState == 1)
+    {
+        if (index < BUFFER_SIZE)
+        {
+            pitchShifterBuffer_Input0[index] = input_left_sample();
+            sample = 0.01*pitchShifterBuffer_Out0[index];
+            index ++;
+        }
+        else
+        {
+            index = 0;
+            newTrameFlagBuf1 = 1;
+            playBuffState = 0;
+        }
+
+    }
+
+
+    outputAudio = sample << 16;                   // Pour avoir un int
+    outputAudio = outputAudio | sample;
+    output_sample(0.1*sample);
+
+
+}

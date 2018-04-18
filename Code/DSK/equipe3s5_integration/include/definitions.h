@@ -36,6 +36,8 @@
 #define LEFT    0
 #define RIGHT   1
 
+// Global functions
 
+void tableClear(float *table, int length);
 
 #endif /* INCLUDE_DEFINITIONS_H_ */

@@ -12,7 +12,14 @@
 #include "effects.h"
 #include "filter.h"
 
-extern uint8_t recordingState;  // State-Machine variable
+#define BUFFER_SIZE 128
+extern float pitchShifterBuffer_Input0[BUFFER_SIZE];
+extern float pitchShifterBuffer_Input1[BUFFER_SIZE];
+extern float pitchShifterBuffer_Out0[BUFFER_SIZE];
+extern float pitchShifterBuffer_Out1[BUFFER_SIZE];
+extern bool newTrameFlagBuf0;
+extern bool newTrameFlagBuf1;
+
 static const uint32_t max_record_size = 80000;      // 80 000 samples
 static const uint8_t max_playback_gain = 10;        // Max playback volume gain
 static const uint16_t output_buffer_offset = 4000;  // Output buffer outputs 4000 samples after the input buffer
