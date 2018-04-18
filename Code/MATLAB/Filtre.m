@@ -2,7 +2,7 @@ clear all
 close all
 clc
 
-Fe = 44100;
+Fe = 16000;
 %% Filtre passe-bas 700 Hz
 clc
 close all
@@ -14,14 +14,17 @@ Theta_700 = 2*700/Fe;
 
 H2 = tf(B, A);
 
-H16 = H2*H2*H2*H2;
+%[num, den] = tfdata(H2, 'v');
 
-[num, den] = tfdata(H2, 'v');
+n =  1:1000;
+x = cos(2*pi*n*2000/Fe);
 
-n =  1:1:1000;
-x = cos(2*pi*n*200/Fe);
+y =  filter(B, A, x);
 
-y =  filter(num, den, x);
+figure
+plot(n, y, 'r')
+hold on 
+plot (n, x, 'b')
 
 %Délai de groupe
 [Gd,Wgd] = grpdelay(num, den);
@@ -41,11 +44,6 @@ figure
 zplane(B, A);
 figure
 freqz(B, A,10000,Fe);
-
-figure
-plot(n, y, 'r')
-hold on 
-plot (n, x, 'b')
 
 round(sos700(1:3)*2^13)
 round(sos700(4:6)*2^13)
@@ -113,10 +111,22 @@ H1 = tf(B1, A1);
 H2 = tf(B2, A2);
 
 cascade = H1*H2;
-[B, A] = tfdata(Gain1*Gain2*cascade, 'v');
+[num, den] = tfdata(Gain1*Gain2*cascade, 'v');
 
 figure
-freqz(B,A, 10000, Fe)
+freqz(num,den, 10000, Fe)
+
+n =  1:1000;
+x = cos(2*pi*n*2000/Fe);
+
+y =  filter(B1, A1, x);
+y = filter(B2,A2,y);
+
+figure
+plot(n, y, 'r')
+hold on 
+plot (n, x, 'b')
+
 
 %% Filtre passe-haut 7000 Hz
 clc
