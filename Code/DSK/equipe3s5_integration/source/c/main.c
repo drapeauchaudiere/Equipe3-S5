@@ -5,6 +5,7 @@
 #include "spi_driver.h"
 #include "audio_driver.h"
 #include "effects.h"
+#include "pitchshifter.h"
 
 /****************************************************************************
     Private macros and constants :
@@ -23,6 +24,12 @@ static const uint32_t max_buffer_size = 160000;     // 16k samples / seconds * 1
 extern far void vectors();  // Vecteurs d'interruption
 extern bool aic23AdcFlag;   // ADC data is ready
 extern EFFECT_CONFIG_U effectConfiguration;
+extern float pitchShiftInputBuffer0[BUFFER_SIZE];
+extern float pitchShiftInputBuffer1[BUFFER_SIZE];
+extern float pitchShiftOutBuffer0[BUFFER_SIZE];
+extern float pitchShiftOutBuffer1[BUFFER_SIZE];
+extern bool newTrameFlagBuf0;
+extern bool newTrameFlagBuf1;
 
 
 /****************************************************************************
@@ -39,9 +46,10 @@ void main(void)
 {
     uint8_t value = 0, index = 0;
     initialization();
+
     while(1)
     {
-        SPI_write(0x90 | (index));
+        /*SPI_write(0x90 | (index));
         if(SPI_rrdy())                   // Data write has been sent and received by MAX3111
         {
             // Read config pour voir si bit 15 (Read ready) est 1
@@ -55,11 +63,29 @@ void main(void)
                     index = 0;
                 }
             }
-            DSK6713_LED_toggle(0);
+         }*/
+        if (newTrameFlagBuf0 == 1)
+        {
+            pitchShift(pitchShifterBuffer_Input1, pitchShifterBuffer_Out1);              ////////24 kHz
+            newTrameFlagBuf0 = 0;
+        }
+        if (newTrameFlagBuf1 == 1)
+        {
+            pitchShift(pitchShifterBuffer_Input0,pitchShifterBuffer_Out0);              ////////24 kHz
+            newTrameFlagBuf1 = 0;
         }
     }
 }
 
+void tableClear(float *table, int length)
+{
+    int i;
+
+    for(i=0; i<length; i++)
+    {
+        table[i] = 0;
+    }
+}
 
 /****************************************************************************
     Private functions :
@@ -68,13 +94,16 @@ void main(void)
 void initialization(void)
 {
     // INITIALISATION DU HARDWARE
-    DSK6713_DIP_init(); // Initialisation de la communication du DSP avec les 4 DIP swichs
-    DSK6713_LED_init(); // Initialisation des 4 LEDS (éteindre)
 
-    init_w();
+    //DSK6713_DIP_init(); // Initialisation de la communication du DSP avec les 4 DIP swichs
+    //DSK6713_LED_init(); // Initialisation des 4 LEDS (éteindre)
+
+    //init_w();
     AUDIO_init();
-    SPI_init();
-    EFFECTS_init();
+    //SPI_init();
+    //EFFECTS_init();
+    initPitchShifter();
+
 }
 
 
