@@ -30,9 +30,9 @@ void main(void)
     SPI_init();
     INT_init();
     GPIO_init();
-    UART_init();
     main_menu = LCD_init(SPI_getPeripheral(SPI_INDEX_2));
-    effects = EFFECTS_init(UART_getPeripheral(UART_INDEX_1));   
+    effects = EFFECTS_init(UART_getPeripheral(UART_INDEX_1));  
+    UART_init(); 
     
     while(1)
     {   
@@ -40,11 +40,13 @@ void main(void)
         if(uartFlag)
         {
             index = UART_read();
-            if((index&0xF0) == 0xA0)
+            
+            if((index&0xF0) == 0x90)
             {              
                 EFFECTS_send((index&0x0F));
             }
-            uartFlag = 0;
+            uartFlag = 0;            
+            PIE1bits.RC1IE = 1;
         }
         LCD_write_menu(main_menu); 
         for(timer=0; timer<10; timer++)
@@ -75,9 +77,12 @@ void interrupt low_priority low_isr(void)
     // UART Rx interrupt
     if(PIE1bits.RC1IE && PIR1bits.RC1IF)
     {
-        uartFlag = 1;
-        PIE1bits.RC1IE = 0;
-        PIR1bits.RC1IF = 0;
+        if(!UART_errorCheck())
+        {
+            uartFlag = 1;
+            PIE1bits.RC1IE = 0;
+            PIR1bits.RC1IF = 0;
+        }
     }
     
     // SPI2 interrupt

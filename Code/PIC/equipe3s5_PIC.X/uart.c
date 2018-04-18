@@ -39,24 +39,26 @@ void UART_write(unsigned char data)
 
 uint8_t UART_read(void)
 {
+    UART_errorCheck();
     uint8_t value = RCREG1;
-    PIE1bits.RC1IE = 1;
     return value;
 }
 
-void UART_errorCheck(void)
+bool UART_errorCheck(void)
 {
     if(RCSTA1bits.FERR == 1)
     {
         char dump;
         dump = RCREG;
+        return 1;
     }
     else if(RCSTA1bits.OERR == 1)
     {
-        TXSTAbits.TXEN = 0;
         RCSTAbits.CREN = 0;
         RCSTAbits.CREN = 1;
+        return 1;
     }
+    return 0;
 }
 
 UART_PERIPHERAL_S *UART_getPeripheral(UART_INDEX_E index)

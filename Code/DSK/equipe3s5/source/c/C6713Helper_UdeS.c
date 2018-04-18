@@ -201,7 +201,7 @@ void comm_intr()						 	//for communication/init using interrupt
   	IRQ_reset(CODECEventId);    		//reset codec INT 11
    IRQ_globalEnable();       			//globally enable interrupts
   	IRQ_nmiEnable();          			//enable NMI interrupt
-   //IRQ_enable(CODECEventId);			//enable CODEC eventXmit INT11
+   IRQ_enable(CODECEventId);			//enable CODEC eventXmit INT11
 
 	output_sample(0);        			//start McBSP interrupt outputting a sample comme une pompe qu'on prime (DG dec 2012)
 }
