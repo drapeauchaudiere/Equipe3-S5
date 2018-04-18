@@ -10,7 +10,9 @@
 #include "gpio.h"
 
 
-KEYBOARD_KEYS_E getKeys(void)
+void GPIO_init(void)
 {
-    return (KEYBOARD_KEYS_E)LATE;
+    TRISE = 0x0F;   // RE4-RE7 : output, RE0-RE3 : input
+    PORTE = 0x00;    // Outputs to 1
 }
+
