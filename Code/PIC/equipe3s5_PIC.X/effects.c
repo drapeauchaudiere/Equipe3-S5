@@ -12,46 +12,35 @@
 #include "effects.h"
 
 EFFECT_CONFIG_U effectConfiguration;     // Variable to old the current effect configuration
-SPI_PERIPHERAL_S *dskSpi;         // Pointer to the SPI peripheral to the DSK 
+UART_PERIPHERAL_S *dskUart;         // Pointer to the SPI peripheral to the DSK 
+uint8_t acknowledge;
 
 
-//EFFECT_CONFIG_U initConfig =
-//{
-//    .fields =
-//    {
-//        .outputIsEnabled = 0,
-//        .effectsAreEnabled = 0,
-//        .gain = 5,            
-//        .lowGain = 5,         
-//        .midGain = 5,         
-//        .highGain = 5,        
-//        .octave = 0,          
-//        .rsvd = 0
-//    }
-//            
-//};
-
-
-void EFFECTS_init(SPI_PERIPHERAL_S *peripheral)
+EFFECT_CONFIG_U *EFFECTS_init(UART_PERIPHERAL_S *peripheral)
 {
-    dskSpi = peripheral;
+    dskUart = peripheral;
+    dskUart->rxdata = &acknowledge;
+    acknowledge = 0xFF;
     
     effectConfiguration.fields.outputIsEnabled = 0;
-    effectConfiguration.fields.effectsAreEnabled = 0;
+    effectConfiguration.fields.effectsAreEnabled = 0;      
+    effectConfiguration.fields.octave = 0;  
     effectConfiguration.fields.gain = 5;            
-    effectConfiguration.fields.lowGain = 8;         
+    effectConfiguration.fields.lowGain = 5;         
     effectConfiguration.fields.midGain = 5;         
-    effectConfiguration.fields.highGain = 5;        
-    effectConfiguration.fields.octave = 0;          
-    effectConfiguration.fields.rsvd = 0;
+    effectConfiguration.fields.highGain = 5;  
     
-    EFFECTS_send();
+    //EFFECTS_send(&effectConfiguration);
+    return &effectConfiguration;
     
 }
 
-void EFFECTS_send(void)
+void EFFECTS_send(uint8_t index)
 {
-    dskSpi->txdata = effectConfiguration.raw;
-    dskSpi->txsize = 4;
-    SPI_write(dskSpi);
+    if(index < 5)
+    {
+        uint8_t value = effectConfiguration.raw[index];
+        UART_write((value & 0x0F) | (0xA0+index*0x10));
+    }
+
 }
